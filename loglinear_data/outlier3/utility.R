@@ -1,5 +1,4 @@
-####################### robust regression ####################### 
-library(MASS)
+####################### robust regression #######################
 rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
                     pseudo_cnt = 0.5, corr_cut = 0.1, prev_cut = 0, lib_cut = 1,
                     res_method = "psi.huber", test_method = "chi",
@@ -72,7 +71,7 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
   sd_alpha <- numeric(m)
   for (iter_m in seq_len(m)) {
     w_tmp <- W[, iter_m]
-    fit <- rlm(formula_use, data = Z, psi = res_method, maxit = 50)
+    fit <- MASS::rlm(formula_use, data = Z, psi = res_method, maxit = 50)
     alpha_vec[iter_m] <- coef(fit)["u1"]
     summary_fit <- summary(fit)
     sd_alpha[iter_m] <- coef(summary_fit)["u1", 2]
@@ -107,8 +106,7 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
   ))
 }
 
-####################### quantile regression ####################### 
-library(quantreg)
+####################### quantile regression #######################
 qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALSE,
                    pseudo_cnt = 0.5, corr_cut = 0.1, prev_cut = 0, lib_cut = 1,
                    test_method = "t", adj_method = "BH", alpha = 0.05) {
@@ -120,18 +118,18 @@ qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALS
   if (is.null(tau)) {
     tau <- 0.5
   }
-  
+
   ## preprocessing
   keep.sam <- which(colSums(Y) >= lib_cut & rowSums(is.na(Z)) == 0)
   Y <- Y[, keep.sam]
   Z <- as.data.frame(Z[keep.sam, ])
   colnames(Z) <- allvars
-  
+
   n <- ncol(Y)
   keep.tax <- which(rowSums(Y > 0) / n >= prev_cut)
   Y <- Y[keep.tax, ]
   m <- nrow(Y)
-  
+
   ## some samples may have zero total counts after screening taxa
   if (any(colSums(Y) == 0)) {
     ind <- which(colSums(Y) > 0)
@@ -141,12 +139,12 @@ qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALS
     keep.sam <- keep.sam[ind]
     n <- ncol(Y)
   }
-  
+
   ## scaling numerical variables
   ind <- sapply(seq_len(ncol(Z)), function(i) is.numeric(Z[, i]))
   Z[, ind] <- scale(Z[, ind])
   p <- ncol(Z) + 1
-  
+
   ## handling zeros
   if (any(Y == 0)) {
     N <- colSums(Y)
@@ -171,11 +169,11 @@ qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALS
       Y <- Y + pseudo_cnt
     }
   }
-  
+
   ## CLR transformation
   logY <- log2(Y)
   W <- t(logY) - colMeans(logY)
-  
+
   ## quantile regression
   options(warn = -1)
   formula_use <- as.formula(paste0("w_tmp", formula))
@@ -183,19 +181,19 @@ qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALS
   sd_alpha <- numeric(m)
   for (iter_m in seq_len(m)) {
     w_tmp <- W[, iter_m]
-    fit <- rq(formula_use, tau = tau, data = Z)
+    fit <- quantreg::rq(formula_use, tau = tau, data = Z)
     alpha_vec[iter_m] <- coef(fit)["u1"]
     summary_fit <- summary(fit, se = "boot", R = 500)
-    sd_alpha[iter_m] <- coef(summary_fit)["u1", 2] 
+    sd_alpha[iter_m] <- coef(summary_fit)["u1", 2]
   }
   options(warn = 0)
-  
+
   #### mode correction
   bias <- modeest::mlv(sqrt(n) * alpha_vec,
-                       method = "meanshift", kernel = "gaussian"
+    method = "meanshift", kernel = "gaussian"
   ) / sqrt(n)
   alpha_correct <- alpha_vec - bias
-  
+
   #### test
   if (test_method == "t") {
     ## t-test
@@ -210,7 +208,7 @@ qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALS
     p_adj <- p.adjust(p_value, method = "BH")
     index_select <- which(p_adj < 0.05)
   }
-  
+
   #### return results
   return(list(
     alpha_correct = alpha_correct, sd_alpha = sd_alpha, p_value = p_value,
@@ -218,7 +216,7 @@ qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALS
   ))
 }
 
-####################### winsorization####################### 
+####################### winsorization#######################
 winsor.fun <- function(Y, quan) {
   N <- colSums(Y)
   P <- t(t(Y) / N)

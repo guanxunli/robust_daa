@@ -43,17 +43,17 @@ for (iter_para in seq_len(nrow(setting))) {
     tmp <- (pi0.ave > 0.005)
     mu <- 2 * mu_use * (n <= 50) + mu_use * (n > 50)
     mu.1 <- log(mu * tmp + mu * (0.005 / pi0.ave)^(1 / 3) * (1 - tmp))
-    
+
     ## index true
     index_true <- rbinom(m, 1, gamma)
     index_alter <- which(index_true == 1)
     alpha <- mu.1 * index_true
-    
+
     ## generative confounders
     u <- rbinom(n, 1, 0.5)
     Z <- cbind(u)
     beta <- alpha
-    
+
     ## generate X
     tmp <- beta %*% t(Z) + beta0
     logX <- matrix(rnorm(m * n, tmp, rep(sqrt(sigma2), n)), nrow = m)
@@ -68,7 +68,7 @@ for (iter_para in seq_len(nrow(setting))) {
     # sample outliers
     index_out <- sample(n, size = ratio_outlier * n)
     Y[, index_out] <- Y[, index_out]^4
-    
+
     ## save results
     Z <- as.data.frame(Z)
     Z$u <- factor(Z$u)
@@ -108,12 +108,12 @@ for (iter_para in seq_len(nrow(setting))) {
     tmp <- (pi0.ave > 0.005)
     mu <- 2 * mu_use * (n <= 50) + mu_use * (n > 50)
     mu.1 <- log(mu * tmp + mu * (0.005 / pi0.ave)^(1 / 3) * (1 - tmp))
-    
+
     ## index true
     index_true <- rbinom(m, 1, gamma)
     index_alter <- which(index_true == 1)
     alpha <- mu.1 * index_true
-    
+
     ## generative confounders
     # c mat
     z1 <- rbinom(n, 1, 0.5)
@@ -128,7 +128,7 @@ for (iter_para in seq_len(nrow(setting))) {
     }
     Z <- cbind(u, z1, z2)
     beta <- cbind(alpha, beta1, beta2)
-    
+
     ## generate X
     tmp <- beta %*% t(Z) + beta0
     logX <- matrix(rnorm(m * n, tmp, rep(sqrt(sigma2), n)), nrow = m)
@@ -143,7 +143,7 @@ for (iter_para in seq_len(nrow(setting))) {
     # sample outliers
     index_out <- sample(n, size = ratio_outlier * n)
     Y[, index_out] <- Y[, index_out]^4
-    
+
     ## save results
     Z <- as.data.frame(Z)
     Z$u <- as.factor(Z$u)
