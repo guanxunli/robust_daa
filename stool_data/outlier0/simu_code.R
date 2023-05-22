@@ -27,7 +27,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/datasets/noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-  
+
   #### LinDA method
   linda_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -46,7 +46,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/results/linda_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-  
+
   #### LinDA97 method
   linda97_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -77,7 +77,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/results/linda97_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-  
+
   #### LinDA90 method
   linda90_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -108,7 +108,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/results/linda90_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-  
+
   #### huber regression
   huber_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -131,7 +131,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/results/huber_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-  
+
   #### bisquare regression
   bisquare_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -154,7 +154,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/results/bisquare_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-  
+
   #### quantile regression
   qr_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -188,7 +188,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/datasets/conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-  
+
   #### LinDA method
   linda_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -200,7 +200,7 @@ for (iter in seq_len(nset)) {
     Z <- as.data.frame(Z)
     Z$u <- as.factor(Z$u)
     Z$z2 <- as.factor(Z$z2)
-    res <- linda(Y, Z, paste("~", formula))
+    res <- LinDA::linda(Y, Z, paste("~", formula))
     rej <- which(res$output[[1]]$reject == TRUE)
     return(rej)
   }, mc.cores = 50)
@@ -208,7 +208,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/results/linda_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-  
+
   #### LinDA97 method
   linda97_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -229,7 +229,7 @@ for (iter in seq_len(nset)) {
     allvars <- colnames(Z)
     Z <- as.data.frame(Z[keep_sam, ])
     colnames(Z) <- allvars
-    res <- linda(
+    res <- LinDA::linda(
       otu.tab = Y, meta = Z, formula = paste("~", formula),
       winsor.quan = 0.97
     )
@@ -240,7 +240,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/results/linda97_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-  
+
   #### LinDA90 method
   linda90_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -261,7 +261,7 @@ for (iter in seq_len(nset)) {
     allvars <- colnames(Z)
     Z <- as.data.frame(Z[keep_sam, ])
     colnames(Z) <- allvars
-    res <- linda(
+    res <- LinDA::linda(
       otu.tab = Y, meta = Z, formula = paste("~", formula),
       winsor.quan = 0.90
     )
@@ -272,7 +272,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/results/linda90_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-  
+
   #### huber regression
   huber_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -296,7 +296,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/results/huber_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-  
+
   #### bisquare regression
   bisquare_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -320,7 +320,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/results/bisquare_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-  
+
   #### quantile regression
   qr_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim

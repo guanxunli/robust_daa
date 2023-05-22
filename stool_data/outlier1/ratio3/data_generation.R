@@ -17,8 +17,8 @@ set_df <- cbind(apply(set_df, 2, rep, length(signa_streng)), rep(signa_streng, e
 colnames(set_df) <- c("n_sam", "n_taxa", "signa_den", "signa_streng")
 set_df <- as.data.frame(set_df)
 nset <- nrow(set_df)
-ratio <- "ratio1"
-ratio_outlier <- 0.01
+ratio <- "ratio3"
+ratio_outlier <- 0.05
 
 #### without confounder
 for (iter in seq_len(nset)) {
