@@ -216,7 +216,7 @@ qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALS
   ))
 }
 
-####################### winsorization#######################
+####################### winsorization #######################
 winsor.fun <- function(Y, quan) {
   N <- colSums(Y)
   P <- t(t(Y) / N)
