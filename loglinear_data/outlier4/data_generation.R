@@ -53,7 +53,7 @@ for (iter_para in seq_len(nrow(setting))) {
 
     ## generate X
     tmp <- beta %*% t(Z) + beta0
-    error_mat <- matrix(rgamma(m * n, shape = 2, rate = 2), nrow = m)
+    error_mat <- matrix(rgamma(m * n, shape = 1, rate = 0.5), nrow = m)
     error_mat <- error_mat - mean(error_mat)
 
     logX <- tmp + error_mat
@@ -129,7 +129,7 @@ for (iter_para in seq_len(nrow(setting))) {
     ## generate X
     tmp <- beta %*% t(Z) + beta0
     # error mat
-    error_mat <- matrix(rgamma(m * n, shape = 2, rate = 2), nrow = m)
+    error_mat <- matrix(rgamma(m * n, shape = 1, rate = 0.5), nrow = m)
     error_mat <- error_mat - mean(error_mat)
     # log X
     logX <- tmp + error_mat
