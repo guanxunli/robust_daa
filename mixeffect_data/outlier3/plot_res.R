@@ -7,7 +7,6 @@ method_vec <- c(
 )
 n_method <- length(method_vec)
 outlier <- "outlier3"
-ratio <- "ratio3"
 ## load parameters
 para0 <- readRDS(paste0("mixeffect_data/", outlier, "/datasets/log.normal.para.rds"))
 beta0 <- para0$beta0
@@ -32,14 +31,14 @@ for (iter_mix in mix_vec) {
       mu_use <- sig_strength_vec[iter_sig]
       ## load results
       dta_list <- readRDS(paste0(
-        "mixeffect_data/", outlier, "/", ratio, "/datasets/n", n,
+        "mixeffect_data/", outlier, "/datasets/n", n,
         "gamma", gamma, "mu", mu_use, iter_mix, ".rds"
       ))
       res_list <- list()
       res_mat_list <- list()
       for (iter_method in method_vec) {
         res_list[[iter_method]] <- readRDS(paste0(
-          "mixeffect_data/", outlier, "/", ratio, "/results/", iter_method, "_n", n,
+          "mixeffect_data/", outlier, "/results/", iter_method, "_n", n,
           "gamma", gamma, "mu", mu_use, iter_mix, ".rds"
         ))
         res_mat_list[[iter_method]] <- matrix(NA, nrow = n_sim, ncol = 2)
@@ -126,7 +125,7 @@ for (iter_mix in mix_vec) {
     }
     shared_legend <- extract_legend(p2_legends)
     pdf(paste0(
-      "mixeffect_data/", outlier, "/", ratio, "/figures/", iter_mix, "_n", n,
+      "mixeffect_data/", outlier, "/figures/", iter_mix, "_n", n,
       "gamma", gamma, ".pdf"
     ), width = 10, height = 10)
     print(grid.arrange(p1, p2, nrow = 2))

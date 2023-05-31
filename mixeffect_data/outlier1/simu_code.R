@@ -50,7 +50,7 @@ for (iter_para in seq_len(n_setting)) {
     return(rej)
   }, mc.cores = 50)
   ## save results
-  saveRDS(lindares, paste0(
+  saveRDS(linda_res, paste0(
     "mixeffect_data/", outlier, "/results/linda_n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))

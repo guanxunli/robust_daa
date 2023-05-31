@@ -2,7 +2,6 @@ set.seed(1)
 library(parallel)
 outlier <- "outlier3"
 source(paste0("mixeffect_data/", outlier, "/utility.R"))
-ratio <- "ratio3"
 ## load parameters
 para0 <- readRDS(paste0("mixeffect_data/", outlier, "/datasets/log.normal.para.rds"))
 beta0 <- para0$beta0
@@ -37,7 +36,7 @@ for (iter_para in seq_len(n_setting)) {
   mu_use <- as.numeric(para[3])
   model <- para[4]
   dta_list <- readRDS(paste0(
-    "mixeffect_data/", outlier, "/", ratio, "/datasets/n", n,
+    "mixeffect_data/", outlier, "/datasets/n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
 
@@ -51,8 +50,8 @@ for (iter_para in seq_len(n_setting)) {
     return(rej)
   }, mc.cores = 50)
   ## save results
-  saveRDS(lindares, paste0(
-    "mixeffect_data/", outlier, "/", ratio, "/results/linda_n", n,
+  saveRDS(linda_res, paste0(
+    "mixeffect_data/", outlier, "/results/linda_n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
 
@@ -80,7 +79,7 @@ for (iter_para in seq_len(n_setting)) {
   }, mc.cores = 50)
   ## save results
   saveRDS(linda97_res, paste0(
-    "mixeffect_data/", outlier, "/", ratio, "/results/linda97_n", n,
+    "mixeffect_data/", outlier, "/results/linda97_n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
 
@@ -108,7 +107,7 @@ for (iter_para in seq_len(n_setting)) {
   }, mc.cores = 50)
   ## save results
   saveRDS(linda90_res, paste0(
-    "mixeffect_data/", outlier, "/", ratio, "/results/linda90_n", n,
+    "mixeffect_data/", outlier, "/results/linda90_n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
 
@@ -123,7 +122,7 @@ for (iter_para in seq_len(n_setting)) {
   }, mc.cores = 50)
   ## save results
   saveRDS(huber_res, paste0(
-    "mixeffect_data/", outlier, "/", ratio, "/results/huber_n", n,
+    "mixeffect_data/", outlier, "/results/huber_n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
 }
