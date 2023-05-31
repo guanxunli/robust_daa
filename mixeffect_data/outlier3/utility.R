@@ -19,18 +19,18 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
     stop("The OTU table contains NAs! Please remove!\n")
   }
   allvars <- colnames(Z)
-  
+
   ## preprocessing
   keep.sam <- which(colSums(Y) >= lib_cut & rowSums(is.na(Z)) == 0)
   Y <- Y[, keep.sam]
   Z <- as.data.frame(Z[keep.sam, ])
   colnames(Z) <- allvars
-  
+
   n <- ncol(Y)
   keep.tax <- which(rowSums(Y > 0) / n >= prev_cut)
   Y <- Y[keep.tax, ]
   m <- nrow(Y)
-  
+
   ## some samples may have zero total counts after screening taxa
   if (any(colSums(Y) == 0)) {
     ind <- which(colSums(Y) > 0)
@@ -40,19 +40,19 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
     keep.sam <- keep.sam[ind]
     n <- ncol(Y)
   }
-  
+
   ## scaling numerical variables
   ind <- sapply(seq_len(ncol(Z)), function(i) is.numeric(Z[, i]))
   Z[, ind] <- scale(Z[, ind])
   p <- ncol(Z) + 1
-  
+
   ## check random effect
   if (grepl("\\(", formula)) {
     random_effect <- TRUE
   } else {
     random_effect <- FALSE
   }
-  
+
   ## handling zeros
   if (any(Y == 0)) {
     N <- colSums(Y)
@@ -81,11 +81,11 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
       Y <- Y + pseudo_cnt
     }
   }
-  
+
   ## CLR transformation
   logY <- log2(Y)
   W <- t(logY) - colMeans(logY)
-  
+
   ## robust linear regression
   options(warn = -1)
   formula_use <- as.formula(paste0("w_tmp", formula))
@@ -113,13 +113,13 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
     }
   }
   options(warn = 0)
-  
+
   #### mode correction
   bias <- modeest::mlv(sqrt(n) * alpha_vec,
-                       method = "meanshift", kernel = "gaussian"
+    method = "meanshift", kernel = "gaussian"
   ) / sqrt(n)
   alpha_correct <- alpha_vec - bias
-  
+
   #### test
   if (test_method == "t") {
     ## t-test
@@ -134,7 +134,7 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
     p_adj <- p.adjust(p_value, method = adj_method)
     index_select <- which(p_adj < alpha)
   }
-  
+
   #### return results
   return(list(
     alpha_correct = alpha_correct, sd_alpha = sd_alpha, p_value = p_value,

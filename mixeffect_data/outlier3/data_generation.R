@@ -1,8 +1,7 @@
 set.seed(1)
 library(parallel)
 outlier <- "outlier3"
-ratio <- "ratio1"
-ratio_outlier <- 0.01
+ratio_outlier <- 0.05
 ## load parameters
 para0 <- readRDS(paste0("mixeffect_data/", outlier, "/datasets/log.normal.para.rds"))
 beta0 <- para0$beta0
@@ -75,7 +74,7 @@ for (iter_para in seq_len(n_setting)) {
     Z <- cbind(u, id)
     beta <- alpha
     tmp <- beta %*% t(Z[, 1]) + beta0
-    logX <- tmp + matrix(rnorm(m * n, sd - sqrt(sigma2)), nrow = m) + r
+    logX <- tmp + matrix(rnorm(m * n, sd = sqrt(sigma2)), nrow = m) + r
     pi <- apply(logX, 2, function(logx) {
       max_logx <- max(logx)
       x <- exp(logx - max_logx)
@@ -101,7 +100,7 @@ for (iter_para in seq_len(n_setting)) {
   }, mc.cores = 50)
   # save datasets
   saveRDS(dta_list, paste0(
-    "mixeffect_data/outlier3/", ratio, "/datasets/n", n,
+    "mixeffect_data/outlier3/datasets/n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
 }

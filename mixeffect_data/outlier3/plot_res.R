@@ -7,7 +7,7 @@ method_vec <- c(
 )
 n_method <- length(method_vec)
 outlier <- "outlier3"
-ratio <- "ratio2"
+ratio <- "ratio3"
 ## load parameters
 para0 <- readRDS(paste0("mixeffect_data/", outlier, "/datasets/log.normal.para.rds"))
 beta0 <- para0$beta0
@@ -39,7 +39,7 @@ for (iter_mix in mix_vec) {
       res_mat_list <- list()
       for (iter_method in method_vec) {
         res_list[[iter_method]] <- readRDS(paste0(
-          "mixeffect_data/", outlier,  "/", ratio, "/results/", iter_method, "_n", n,
+          "mixeffect_data/", outlier, "/", ratio, "/results/", iter_method, "_n", n,
           "gamma", gamma, "mu", mu_use, iter_mix, ".rds"
         ))
         res_mat_list[[iter_method]] <- matrix(NA, nrow = n_sim, ncol = 2)

@@ -2,7 +2,7 @@ set.seed(1)
 library(parallel)
 outlier <- "outlier3"
 source(paste0("mixeffect_data/", outlier, "/utility.R"))
-ratio <- "ratio2"
+ratio <- "ratio3"
 ## load parameters
 para0 <- readRDS(paste0("mixeffect_data/", outlier, "/datasets/log.normal.para.rds"))
 beta0 <- para0$beta0
@@ -40,7 +40,7 @@ for (iter_para in seq_len(n_setting)) {
     "mixeffect_data/", outlier, "/", ratio, "/datasets/n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
-  
+
   #### LinDA method
   linda_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -55,7 +55,7 @@ for (iter_para in seq_len(n_setting)) {
     "mixeffect_data/", outlier, "/", ratio, "/results/linda_n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
-  
+
   #### LinDA 97
   linda97_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -83,7 +83,7 @@ for (iter_para in seq_len(n_setting)) {
     "mixeffect_data/", outlier, "/", ratio, "/results/linda97_n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
-  
+
   #### LinDA 90
   linda90_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -111,7 +111,7 @@ for (iter_para in seq_len(n_setting)) {
     "mixeffect_data/", outlier, "/", ratio, "/results/linda90_n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
-  
+
   #### Huber method
   huber_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
