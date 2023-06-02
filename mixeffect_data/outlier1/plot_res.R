@@ -128,7 +128,10 @@ for (iter_mix in mix_vec) {
       "mixeffect_data/", outlier, "/figures/", iter_mix, "_n", n,
       "gamma", gamma, ".pdf"
     ), width = 10, height = 10)
-    print(grid.arrange(p1, p2, nrow = 2))
+    print(grid.arrange(arrangeGrob(p1, p2, nrow = 2),
+      shared_legend,
+      nrow = 2, heights = c(10, 1)
+    ))
     dev.off()
   }
 }

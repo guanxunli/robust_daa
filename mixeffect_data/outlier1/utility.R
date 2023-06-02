@@ -11,6 +11,7 @@ winsor.fun <- function(Y, quan) {
 }
 
 ####################### Huber method #######################
+library(lme4)
 rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
                     pseudo_cnt = 0.5, corr_cut = 0.1, prev_cut = 0, lib_cut = 1,
                     test_method = "t", adj_method = "BH", alpha = 0.05) {
