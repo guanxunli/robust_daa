@@ -67,7 +67,7 @@ for (iter_para in seq_len(nrow(setting))) {
     Y <- sapply(1:n, function(s) rmultinom(1, N[s], pi[, s]))
     # sample outliers
     index_out <- sample(n, size = ratio_outlier * n)
-    Y[, index_out] <- Y[, index_out]^4
+    Y[, index_out] <- Y[, index_out]^3
 
     ## save results
     Z <- as.data.frame(Z)

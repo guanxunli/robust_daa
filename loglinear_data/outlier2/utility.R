@@ -79,9 +79,10 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
   options(warn = 0)
 
   #### mode correction
-  bias <- modeest::mlv(sqrt(n) * alpha_vec,
-    method = "meanshift", kernel = "gaussian"
-  ) / sqrt(n)
+  bias <- median(alpha_vec)
+  # bias <- modeest::mlv(sqrt(n) * alpha_vec,
+  #   method = "meanshift", kernel = "gaussian"
+  # ) / sqrt(n)
   alpha_correct <- alpha_vec - bias
 
   #### test
@@ -193,6 +194,8 @@ qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALS
     method = "meanshift", kernel = "gaussian"
   ) / sqrt(n)
   alpha_correct <- alpha_vec - bias
+  var_alpha <- sd_alpha * sd_alpha
+  sd_alpha <- sqrt(var_alpha + mean(var_alpha) / m)
 
   #### test
   if (test_method == "t") {
