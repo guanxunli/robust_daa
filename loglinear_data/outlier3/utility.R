@@ -73,31 +73,35 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
   
   ## Huber method
   if (res_method == "psi.huber") {
-    hyper_para_vec <- exp(seq(log(0.5), log(3), length = 10))
+    hyper_para_vec <- exp(seq(log(0.2), log(5), length = 20))
+    cv_fold <- origami::folds_vfold(n = n, V = 5)
     for (iter_m in seq_len(m)) {
       ## sample index
       w_tmp <- W[, iter_m]
-      index_cross <- sample(n, 0.2 * n)
-      Z_cross <- data.frame(Z[index_cross, ])
-      while (length(unique(Z_cross[, 1])) == 1) {
-        index_cross <- sample(n, 0.2 * n)
-        Z_cross <- data.frame(Z[index_cross, ])
-      }
-      colnames(Z_cross) <- colnames(Z)
-      w_cross <- w_tmp[index_cross]
-      ## train datasets
-      index_train <- seq_len(n)[-index_cross]
-      w_train <- w_tmp[index_train]
-      Z_train <- data.frame(Z[index_train, ])
-      colnames(Z_train) <- colnames(Z)
-      ## calculate residuals
-      resid_para <- numeric(10)
-      for (iter_cross in seq_len(10)) {
+      resid_para <- numeric(20)
+      resid_cv <- numeric(5)
+      for (iter_cross in seq_len(20)) {
         hyper_para_use <- hyper_para_vec[iter_cross]
-        fit_tmp <-  MASS::rlm(formula_train, data = Z_train, psi = res_method, maxit = 50,
-                              k = hyper_para_use)
-        resid_para[iter_cross] <- sum((w_cross - predict(fit_tmp, data = Z_cross))^2)
+        for (iter_fold in seq_len(5)) {
+          ## load index
+          cv_tmp <- cv_fold[[iter_fold]]
+          index_train <- cv_tmp$training_set
+          index_cross <- cv_tmp$validation_set
+          ## load data
+          Z_cross <- data.frame(Z[index_cross, ])
+          colnames(Z_cross) <- colnames(Z)
+          w_cross <- w_tmp[index_cross]
+          w_train <- w_tmp[index_train]
+          Z_train <- data.frame(Z[index_train, ])
+          colnames(Z_train) <- colnames(Z)
+          ## fit model
+          fit_tmp <-  MASS::rlm(formula_train, data = Z_train, psi = res_method, maxit = 50,
+                                k = hyper_para_use)
+          resid_cv[iter_fold] <- sum((w_cross - predict(fit_tmp, data = Z_cross))^2)
+        } 
+        resid_para[iter_cross] <- mean(resid_cv)
       }
+      ## fit model
       hyper_para <- hyper_para_vec[which.min(resid_para)]
       fit <- MASS::rlm(formula_use, data = Z, psi = res_method, maxit = 50, k = hyper_para)
       alpha_vec[iter_m] <- coef(fit)["u1"]
@@ -105,31 +109,35 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
       sd_alpha[iter_m] <- coef(summary_fit)["u1", 2]
     }
   } else if (res_method == "psi.bisquare") {
-    hyper_para_vec <- exp(seq(log(2), log(8), length = 10))
+    hyper_para_vec <- exp(seq(log(1), log(10), length = 20))
+    cv_fold <- origami::folds_vfold(n = n, V = 5)
     for (iter_m in seq_len(m)) {
       ## sample index
       w_tmp <- W[, iter_m]
-      index_cross <- sample(n, 0.2 * n)
-      Z_cross <- data.frame(Z[index_cross, ])
-      while (length(unique(Z_cross[, 1])) == 1) {
-        index_cross <- sample(n, 0.2 * n)
-        Z_cross <- data.frame(Z[index_cross, ])
-      }
-      colnames(Z_cross) <- colnames(Z)
-      w_cross <- w_tmp[index_cross]
-      ## train datasets
-      index_train <- seq_len(n)[-index_cross]
-      w_train <- w_tmp[index_train]
-      Z_train <- data.frame(Z[index_train, ])
-      colnames(Z_train) <- colnames(Z)
-      ## calculate residuals
-      resid_para <- numeric(10)
-      for (iter_cross in seq_len(10)) {
+      resid_para <- numeric(20)
+      resid_cv <- numeric(5)
+      for (iter_cross in seq_len(20)) {
         hyper_para_use <- hyper_para_vec[iter_cross]
-        fit_tmp <-  MASS::rlm(formula_train, data = Z_train, psi = res_method, maxit = 50,
-                              c = hyper_para_use)
-        resid_para[iter_cross] <- sum((w_cross - predict(fit_tmp, data = Z_cross))^2)
+        for (iter_fold in seq_len(5)) {
+          ## load index
+          cv_tmp <- cv_fold[[iter_fold]]
+          index_train <- cv_tmp$training_set
+          index_cross <- cv_tmp$validation_set
+          ## load data
+          Z_cross <- data.frame(Z[index_cross, ])
+          colnames(Z_cross) <- colnames(Z)
+          w_cross <- w_tmp[index_cross]
+          w_train <- w_tmp[index_train]
+          Z_train <- data.frame(Z[index_train, ])
+          colnames(Z_train) <- colnames(Z)
+          ## fit model
+          fit_tmp <-  MASS::rlm(formula_train, data = Z_train, psi = res_method, maxit = 50,
+                                c = hyper_para_use)
+          resid_cv[iter_fold] <- sum((w_cross - predict(fit_tmp, data = Z_cross))^2)
+        } 
+        resid_para[iter_cross] <- mean(resid_cv)
       }
+      ## fit model
       hyper_para <- hyper_para_vec[which.min(resid_para)]
       fit <- MASS::rlm(formula_use, data = Z, psi = res_method, maxit = 50, c = hyper_para)
       alpha_vec[iter_m] <- coef(fit)["u1"]
