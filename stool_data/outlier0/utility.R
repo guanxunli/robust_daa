@@ -1,25 +1,25 @@
 ####################### robust regression #######################
 rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
                     pseudo_cnt = 0.5, corr_cut = 0.1, prev_cut = 0, lib_cut = 1,
-                    res_method = "psi.huber", test_method = "chi",
-                    adj_method = "BY", alpha = 0.05) {
+                    res_method = "psi.huber", test_method = "t",
+                    adj_method = "BH", alpha = 0.05) {
   #### check input
   if (any(is.na(Y))) {
     stop("The OTU table contains NAs! Please remove!\n")
   }
   allvars <- colnames(Z)
-
+  
   ## preprocessing
   keep.sam <- which(colSums(Y) >= lib_cut & rowSums(is.na(Z)) == 0)
   Y <- Y[, keep.sam]
   Z <- as.data.frame(Z[keep.sam, ])
   colnames(Z) <- allvars
-
+  
   n <- ncol(Y)
   keep.tax <- which(rowSums(Y > 0) / n >= prev_cut)
   Y <- Y[keep.tax, ]
   m <- nrow(Y)
-
+  
   ## some samples may have zero total counts after screening taxa
   if (any(colSums(Y) == 0)) {
     ind <- which(colSums(Y) > 0)
@@ -29,12 +29,12 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
     keep.sam <- keep.sam[ind]
     n <- ncol(Y)
   }
-
+  
   ## scaling numerical variables
   ind <- sapply(seq_len(ncol(Z)), function(i) is.numeric(Z[, i]))
   Z[, ind] <- scale(Z[, ind])
   p <- ncol(Z) + 1
-
+  
   ## handling zeros
   if (any(Y == 0)) {
     N <- colSums(Y)
@@ -59,31 +59,93 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
       Y <- Y + pseudo_cnt
     }
   }
-
+  
   ## CLR transformation
   logY <- log2(Y)
   W <- t(logY) - colMeans(logY)
-
+  
   ## robust linear regression
   options(warn = -1)
   formula_use <- as.formula(paste0("w_tmp", formula))
+  formula_train <- as.formula(paste0("w_train", formula))
   alpha_vec <- numeric(m)
   sd_alpha <- numeric(m)
-  for (iter_m in seq_len(m)) {
-    w_tmp <- W[, iter_m]
-    fit <- MASS::rlm(formula_use, data = Z, psi = res_method, maxit = 50)
-    alpha_vec[iter_m] <- coef(fit)["u1"]
-    summary_fit <- summary(fit)
-    sd_alpha[iter_m] <- coef(summary_fit)["u1", 2]
+  
+  ## Huber method
+  if (res_method == "psi.huber") {
+    hyper_para_vec <- exp(seq(log(0.5), log(3), length = 10))
+    for (iter_m in seq_len(m)) {
+      ## sample index
+      w_tmp <- W[, iter_m]
+      index_cross <- sample(n, 0.2 * n)
+      Z_cross <- data.frame(Z[index_cross, ])
+      while (length(unique(Z_cross[, 1])) == 1) {
+        index_cross <- sample(n, 0.2 * n)
+        Z_cross <- data.frame(Z[index_cross, ])
+      }
+      colnames(Z_cross) <- colnames(Z)
+      w_cross <- w_tmp[index_cross]
+      ## train datasets
+      index_train <- seq_len(n)[-index_cross]
+      w_train <- w_tmp[index_train]
+      Z_train <- data.frame(Z[index_train, ])
+      colnames(Z_train) <- colnames(Z)
+      ## calculate residuals
+      resid_para <- numeric(10)
+      for (iter_cross in seq_len(10)) {
+        hyper_para_use <- hyper_para_vec[iter_cross]
+        fit_tmp <-  MASS::rlm(formula_train, data = Z_train, psi = res_method, maxit = 50,
+                              k = hyper_para_use)
+        resid_para[iter_cross] <- sum((w_cross - predict(fit_tmp, data = Z_cross))^2)
+      }
+      hyper_para <- hyper_para_vec[which.min(resid_para)]
+      fit <- MASS::rlm(formula_use, data = Z, psi = res_method, maxit = 50, k = hyper_para)
+      alpha_vec[iter_m] <- coef(fit)["u1"]
+      summary_fit <- summary(fit)
+      sd_alpha[iter_m] <- coef(summary_fit)["u1", 2]
+    }
+  } else if (res_method == "psi.bisquare") {
+    hyper_para_vec <- exp(seq(log(2), log(8), length = 10))
+    for (iter_m in seq_len(m)) {
+      ## sample index
+      w_tmp <- W[, iter_m]
+      index_cross <- sample(n, 0.2 * n)
+      Z_cross <- data.frame(Z[index_cross, ])
+      while (length(unique(Z_cross[, 1])) == 1) {
+        index_cross <- sample(n, 0.2 * n)
+        Z_cross <- data.frame(Z[index_cross, ])
+      }
+      colnames(Z_cross) <- colnames(Z)
+      w_cross <- w_tmp[index_cross]
+      ## train datasets
+      index_train <- seq_len(n)[-index_cross]
+      w_train <- w_tmp[index_train]
+      Z_train <- data.frame(Z[index_train, ])
+      colnames(Z_train) <- colnames(Z)
+      ## calculate residuals
+      resid_para <- numeric(10)
+      for (iter_cross in seq_len(10)) {
+        hyper_para_use <- hyper_para_vec[iter_cross]
+        fit_tmp <-  MASS::rlm(formula_train, data = Z_train, psi = res_method, maxit = 50,
+                              c = hyper_para_use)
+        resid_para[iter_cross] <- sum((w_cross - predict(fit_tmp, data = Z_cross))^2)
+      }
+      hyper_para <- hyper_para_vec[which.min(resid_para)]
+      fit <- MASS::rlm(formula_use, data = Z, psi = res_method, maxit = 50, c = hyper_para)
+      alpha_vec[iter_m] <- coef(fit)["u1"]
+      summary_fit <- summary(fit)
+      sd_alpha[iter_m] <- coef(summary_fit)["u1", 2]
+    }
   }
   options(warn = 0)
-
+  
   #### mode correction
+  # bias <- median(alpha_vec)
   bias <- modeest::mlv(sqrt(n) * alpha_vec,
-    method = "meanshift", kernel = "gaussian"
+                       method = "meanshift", kernel = "gaussian"
   ) / sqrt(n)
   alpha_correct <- alpha_vec - bias
-
+  
   #### test
   if (test_method == "t") {
     ## t-test
@@ -98,7 +160,7 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
     p_adj <- p.adjust(p_value, method = adj_method)
     index_select <- which(p_adj < alpha)
   }
-
+  
   #### return results
   return(list(
     alpha_correct = alpha_correct, sd_alpha = sd_alpha, p_value = p_value,
@@ -118,18 +180,18 @@ qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALS
   if (is.null(tau)) {
     tau <- 0.5
   }
-
+  
   ## preprocessing
   keep.sam <- which(colSums(Y) >= lib_cut & rowSums(is.na(Z)) == 0)
   Y <- Y[, keep.sam]
   Z <- as.data.frame(Z[keep.sam, ])
   colnames(Z) <- allvars
-
+  
   n <- ncol(Y)
   keep.tax <- which(rowSums(Y > 0) / n >= prev_cut)
   Y <- Y[keep.tax, ]
   m <- nrow(Y)
-
+  
   ## some samples may have zero total counts after screening taxa
   if (any(colSums(Y) == 0)) {
     ind <- which(colSums(Y) > 0)
@@ -139,12 +201,12 @@ qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALS
     keep.sam <- keep.sam[ind]
     n <- ncol(Y)
   }
-
+  
   ## scaling numerical variables
   ind <- sapply(seq_len(ncol(Z)), function(i) is.numeric(Z[, i]))
   Z[, ind] <- scale(Z[, ind])
   p <- ncol(Z) + 1
-
+  
   ## handling zeros
   if (any(Y == 0)) {
     N <- colSums(Y)
@@ -169,11 +231,11 @@ qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALS
       Y <- Y + pseudo_cnt
     }
   }
-
+  
   ## CLR transformation
   logY <- log2(Y)
   W <- t(logY) - colMeans(logY)
-
+  
   ## quantile regression
   options(warn = -1)
   formula_use <- as.formula(paste0("w_tmp", formula))
@@ -187,13 +249,13 @@ qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALS
     sd_alpha[iter_m] <- coef(summary_fit)["u1", 2]
   }
   options(warn = 0)
-
+  
   #### mode correction
   bias <- modeest::mlv(sqrt(n) * alpha_vec,
-    method = "meanshift", kernel = "gaussian"
+                       method = "meanshift", kernel = "gaussian"
   ) / sqrt(n)
   alpha_correct <- alpha_vec - bias
-
+  
   #### test
   if (test_method == "t") {
     ## t-test
@@ -208,7 +270,7 @@ qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALS
     p_adj <- p.adjust(p_value, method = "BH")
     index_select <- which(p_adj < 0.05)
   }
-
+  
   #### return results
   return(list(
     alpha_correct = alpha_correct, sd_alpha = sd_alpha, p_value = p_value,
@@ -216,7 +278,7 @@ qr_fun <- function(Y, Z, formula, tau = NULL, adaptive = TRUE, imputation = FALS
   ))
 }
 
-####################### winsorization#######################
+####################### winsorization #######################
 winsor.fun <- function(Y, quan) {
   N <- colSums(Y)
   P <- t(t(Y) / N)
