@@ -35,7 +35,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/datasets/nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### LinDA method
   linda_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -49,7 +49,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/results/linda_nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### LinDA97 method
   linda97_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -76,7 +76,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/results/linda97_nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### LinDA90 method
   linda90_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -104,20 +104,20 @@ for (iter_para in seq_len(n_setting)) {
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
   
-  # #### LinDA winsor method
-  # linda_winsor_res <- mclapply(dta_list, function(dta) {
-  #   Y <- dta$Y
-  #   Z <- dta$Z
-  #   res <- linda_winsor(Y, Z, paste("~", formula))
-  #   rej <- which(res$output[[1]]$reject == TRUE)
-  #   return(rej)
-  # }, mc.cores = 50)
-  # ## save results
-  # saveRDS(linda_winsor_res, paste0(
-  #   "loglinear_data/", outlier, "/results/linda_winsor_nocon_n", n,
-  #   "gamma", gamma, "mu", mu_use, ".rds"
-  # ))
-
+  #### LinDA winsor method
+  linda_winsor_res <- mclapply(dta_list, function(dta) {
+    Y <- dta$Y
+    Z <- dta$Z
+    res <- linda_winsor(Y, Z, paste("~", formula))
+    rej <- res$index_select
+    return(rej)
+  }, mc.cores = 50)
+  ## save results
+  saveRDS(linda_winsor_res, paste0(
+    "loglinear_data/", outlier, "/results/linda_winsor_nocon_n", n,
+    "gamma", gamma, "mu", mu_use, ".rds"
+  ))
+  
   #### Huber method
   huber_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -135,7 +135,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/results/huber_nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### bisquare method
   bisquare_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -153,7 +153,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/results/bisquare_nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### quantile regression
   qr_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -182,7 +182,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/datasets/con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### LinDA method
   linda_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -196,7 +196,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/results/linda_con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### LinDA97 method
   linda97_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -223,7 +223,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/results/linda97_con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### LinDA90 method
   linda90_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -251,21 +251,20 @@ for (iter_para in seq_len(n_setting)) {
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
   
-  # #### LinDA winsor method
-  # linda_winsor_res <- mclapply(dta_list, function(dta) {
-  #   Y <- dta$Y
-  #   Z <- dta$Z
-  #   res <- linda_winsor(Y, Z, paste("~", formula))
-  #   rej <- which(res$output[[1]]$reject == TRUE)
-  #   return(rej)
-  # }, mc.cores = 50)
-  # ## save results
-  # saveRDS(linda_winsor_res, paste0(
-  #   "loglinear_data/", outlier, "/results/linda_winsor_con_n", n,
-  #   "gamma", gamma, "mu", mu_use, ".rds"
-  # ))
+  #### LinDA winsor method
+  linda_winsor_res <- mclapply(dta_list, function(dta) {
+    Y <- dta$Y
+    Z <- dta$Z
+    res <- linda_winsor(Y, Z, paste("~", formula))
+    rej <- which(res$output[[1]]$reject == TRUE)
+    return(rej)
+  }, mc.cores = 50)
+  ## save results
+  saveRDS(linda_winsor_res, paste0(
+    "loglinear_data/", outlier, "/results/linda_winsor_con_n", n,
+    "gamma", gamma, "mu", mu_use, ".rds"
+  ))
   
-
   #### Huber method
   huber_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -283,7 +282,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/results/huber_con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### bisquare method
   bisquare_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -301,7 +300,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/results/bisquare_con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### quantile regression
   qr_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
