@@ -44,7 +44,7 @@ for (iter_para in seq_len(n_setting)) {
     res <- LinDA::linda(Y, Z, paste("~", formula))
     rej <- which(res$output[[1]]$reject == TRUE)
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   ## save results
   saveRDS(linda_res, paste0(
     "loglinear_data/", outlier, "/", ratio, "/results/linda_nocon_n", n,
@@ -71,7 +71,7 @@ for (iter_para in seq_len(n_setting)) {
     )
     rej <- which(res$output[[1]]$reject == TRUE)
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   ## save results
   saveRDS(linda97_res, paste0(
     "loglinear_data/", outlier, "/", ratio, "/results/linda97_nocon_n", n,
@@ -98,13 +98,13 @@ for (iter_para in seq_len(n_setting)) {
     )
     rej <- which(res$output[[1]]$reject == TRUE)
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   ## save results
   saveRDS(linda90_res, paste0(
     "loglinear_data/", outlier, "/", ratio, "/results/linda90_nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-  
+
   #### LinDA winsor method
   linda_winsor_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -112,7 +112,7 @@ for (iter_para in seq_len(n_setting)) {
     res <- linda_winsor(Y, Z, paste("~", formula))
     rej <- res$index_select
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   ## save results
   saveRDS(linda_winsor_res, paste0(
     "loglinear_data/", outlier, "/", ratio, "/results/linda_winsor_nocon_n", n,
@@ -130,7 +130,7 @@ for (iter_para in seq_len(n_setting)) {
     )
     rej <- res$index_select
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   ## save results
   saveRDS(huber_res, paste0(
     "loglinear_data/", outlier, "/", ratio, "/results/huber_nocon_n", n,
@@ -148,26 +148,26 @@ for (iter_para in seq_len(n_setting)) {
     )
     rej <- res$index_select
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   ## save results
   saveRDS(bisquare_res, paste0(
     "loglinear_data/", outlier, "/", ratio, "/results/bisquare_nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
 
-  #### quantile regression
-  qr_res <- mclapply(dta_list, function(dta) {
-    Y <- dta$Y
-    Z <- dta$Z
-    res <- qr_fun(Y, Z, paste("~", formula))
-    rej <- res$index_select
-    return(rej)
-  }, mc.cores = 50)
-  ## save results
-  saveRDS(qr_res, paste0(
-    "loglinear_data/", outlier, "/", ratio, "/results/qr_nocon_n", n,
-    "gamma", gamma, "mu", mu_use, ".rds"
-  ))
+  # #### quantile regression
+  # qr_res <- mclapply(dta_list, function(dta) {
+  #   Y <- dta$Y
+  #   Z <- dta$Z
+  #   res <- qr_fun(Y, Z, paste("~", formula))
+  #   rej <- res$index_select
+  #   return(rej)
+  # }, mc.cores = 25)
+  # ## save results
+  # saveRDS(qr_res, paste0(
+  #   "loglinear_data/", outlier, "/", ratio, "/results/qr_nocon_n", n,
+  #   "gamma", gamma, "mu", mu_use, ".rds"
+  # ))
 }
 
 ################## with confounder ##################
@@ -191,7 +191,7 @@ for (iter_para in seq_len(n_setting)) {
     res <- LinDA::linda(Y, Z, paste("~", formula))
     rej <- which(res$output[[1]]$reject == TRUE)
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   ## save results
   saveRDS(linda_res, paste0(
     "loglinear_data/", outlier, "/", ratio, "/results/linda_con_n", n,
@@ -218,7 +218,7 @@ for (iter_para in seq_len(n_setting)) {
     )
     rej <- which(res$output[[1]]$reject == TRUE)
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   ## save results
   saveRDS(linda97_res, paste0(
     "loglinear_data/", outlier, "/", ratio, "/results/linda97_con_n", n,
@@ -245,21 +245,21 @@ for (iter_para in seq_len(n_setting)) {
     )
     rej <- which(res$output[[1]]$reject == TRUE)
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   ## save results
   saveRDS(linda90_res, paste0(
     "loglinear_data/", outlier, "/", ratio, "/results/linda90_con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-  
+
   #### LinDA winsor method
   linda_winsor_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
     Z <- dta$Z
     res <- linda_winsor(Y, Z, paste("~", formula))
-    rej <- which(res$output[[1]]$reject == TRUE)
+    rej <- res$index_select
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   ## save results
   saveRDS(linda_winsor_res, paste0(
     "loglinear_data/", outlier, "/", ratio, "/results/linda_winsor_con_n", n,
@@ -277,7 +277,7 @@ for (iter_para in seq_len(n_setting)) {
     )
     rej <- res$index_select
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   ## save results
   saveRDS(huber_res, paste0(
     "loglinear_data/", outlier, "/", ratio, "/results/huber_con_n", n,
@@ -295,24 +295,24 @@ for (iter_para in seq_len(n_setting)) {
     )
     rej <- res$index_select
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   ## save results
   saveRDS(bisquare_res, paste0(
     "loglinear_data/", outlier, "/", ratio, "/results/bisquare_con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
 
-  #### quantile regression
-  qr_res <- mclapply(dta_list, function(dta) {
-    Y <- dta$Y
-    Z <- dta$Z
-    res <- qr_fun(Y, Z, paste("~", formula))
-    rej <- res$index_select
-    return(rej)
-  }, mc.cores = 50)
-  ## save results
-  saveRDS(qr_res, paste0(
-    "loglinear_data/", outlier, "/", ratio, "/results/qr_con_n", n,
-    "gamma", gamma, "mu", mu_use, ".rds"
-  ))
+  # #### quantile regression
+  # qr_res <- mclapply(dta_list, function(dta) {
+  #   Y <- dta$Y
+  #   Z <- dta$Z
+  #   res <- qr_fun(Y, Z, paste("~", formula))
+  #   rej <- res$index_select
+  #   return(rej)
+  # }, mc.cores = 25)
+  # ## save results
+  # saveRDS(qr_res, paste0(
+  #   "loglinear_data/", outlier, "/", ratio, "/results/qr_con_n", n,
+  #   "gamma", gamma, "mu", mu_use, ".rds"
+  # ))
 }

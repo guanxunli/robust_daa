@@ -35,7 +35,7 @@ for (iter in seq_len(nset)) {
     dta <- dta_list[[iter_simu]]
     Y <- dta$otu.tab.sim
     index_out <- sample(n_sam, size = ratio_outlier * n_sam)
-    Y[, index_out] <- Y[, index_out]^4
+    Y[, index_out] <- Y[, index_out]^3
     dta$otu.tab.sim <- Y
     dta$index_out <- index_out
     return(dta)
@@ -61,7 +61,7 @@ for (iter in seq_len(nset)) {
     dta <- dta_list[[iter_simu]]
     Y <- dta$otu.tab.sim
     index_out <- sample(n_sam, size = ratio_outlier * n_sam)
-    Y[, index_out] <- Y[, index_out]^4
+    Y[, index_out] <- Y[, index_out]^3
     dta$otu.tab.sim <- Y
     dta$index_out <- index_out
     return(dta)

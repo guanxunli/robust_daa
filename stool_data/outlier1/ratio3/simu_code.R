@@ -42,7 +42,7 @@ for (iter in seq_len(nset)) {
     res <- LinDA::linda(Y, Z, paste("~", formula))
     rej <- which(res$output[[1]]$reject == TRUE)
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   saveRDS(linda_res, paste0(
     "stool_data/", outlier, "/", ratio, "/results/linda_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
@@ -73,7 +73,7 @@ for (iter in seq_len(nset)) {
     )
     rej <- which(res$output[[1]]$reject == TRUE)
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   saveRDS(linda97_res, paste0(
     "stool_data/", outlier, "/", ratio, "/results/linda97_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
@@ -104,12 +104,12 @@ for (iter in seq_len(nset)) {
     )
     rej <- which(res$output[[1]]$reject == TRUE)
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   saveRDS(linda90_res, paste0(
     "stool_data/", outlier, "/", ratio, "/results/linda90_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-  
+
   #### LinDA winsor method
   linda_winsor_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -123,7 +123,7 @@ for (iter in seq_len(nset)) {
     res <- linda_winsor(Y, Z, paste("~", formula))
     rej <- res$index_select
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   saveRDS(linda_winsor_res, paste0(
     "stool_data/", outlier, "/", ratio, "/results/linda_winsor_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
@@ -146,7 +146,7 @@ for (iter in seq_len(nset)) {
     )
     rej <- res$index_select
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   saveRDS(huber_res, paste0(
     "stool_data/", outlier, "/", ratio, "/results/huber_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
@@ -169,30 +169,30 @@ for (iter in seq_len(nset)) {
     )
     rej <- res$index_select
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   saveRDS(bisquare_res, paste0(
     "stool_data/", outlier, "/", ratio, "/results/bisquare_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
 
-  #### quantile regression
-  qr_res <- mclapply(dta_list, function(dta) {
-    Y <- dta$otu.tab.sim
-    colnames(Y) <- paste0("sample", seq_len(n_sam))
-    rownames(Y) <- paste0("taxon", seq_len(n_taxa))
-    Z <- dta$covariate
-    colnames(Z) <- "u"
-    rownames(Z) <- paste0("sample", seq_len(n_sam))
-    Z <- as.data.frame(Z)
-    Z$u <- as.factor(Z$u)
-    res <- qr_fun(Y, Z, paste("~", formula))
-    rej <- res$index_select
-    return(rej)
-  }, mc.cores = 50)
-  saveRDS(qr_res, paste0(
-    "stool_data/", outlier, "/", ratio, "/results/qr_noconf_nsam", n_sam, "ntaxa", n_taxa,
-    "signal", signa_den, "streng", signa_streng, ".rds"
-  ))
+  # #### quantile regression
+  # qr_res <- mclapply(dta_list, function(dta) {
+  #   Y <- dta$otu.tab.sim
+  #   colnames(Y) <- paste0("sample", seq_len(n_sam))
+  #   rownames(Y) <- paste0("taxon", seq_len(n_taxa))
+  #   Z <- dta$covariate
+  #   colnames(Z) <- "u"
+  #   rownames(Z) <- paste0("sample", seq_len(n_sam))
+  #   Z <- as.data.frame(Z)
+  #   Z$u <- as.factor(Z$u)
+  #   res <- qr_fun(Y, Z, paste("~", formula))
+  #   rej <- res$index_select
+  #   return(rej)
+  # }, mc.cores = 25)
+  # saveRDS(qr_res, paste0(
+  #   "stool_data/", outlier, "/", ratio, "/results/qr_noconf_nsam", n_sam, "ntaxa", n_taxa,
+  #   "signal", signa_den, "streng", signa_streng, ".rds"
+  # ))
 }
 
 ################## with confounder ##################
@@ -223,7 +223,7 @@ for (iter in seq_len(nset)) {
     res <- LinDA::linda(Y, Z, paste("~", formula))
     rej <- which(res$output[[1]]$reject == TRUE)
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   saveRDS(linda_res, paste0(
     "stool_data/", outlier, "/", ratio, "/results/linda_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
@@ -255,7 +255,7 @@ for (iter in seq_len(nset)) {
     )
     rej <- which(res$output[[1]]$reject == TRUE)
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   saveRDS(linda97_res, paste0(
     "stool_data/", outlier, "/", ratio, "/results/linda97_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
@@ -287,12 +287,12 @@ for (iter in seq_len(nset)) {
     )
     rej <- which(res$output[[1]]$reject == TRUE)
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   saveRDS(linda90_res, paste0(
     "stool_data/", outlier, "/", ratio, "/results/linda90_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-  
+
   #### LinDA winsor method
   linda_winsor_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -307,7 +307,7 @@ for (iter in seq_len(nset)) {
     res <- linda_winsor(Y, Z, paste("~", formula))
     rej <- res$index_select
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   saveRDS(linda_winsor_res, paste0(
     "stool_data/", outlier, "/", ratio, "/results/linda_winsor_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
@@ -331,7 +331,7 @@ for (iter in seq_len(nset)) {
     )
     rej <- res$index_select
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   saveRDS(huber_res, paste0(
     "stool_data/", outlier, "/", ratio, "/results/huber_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
@@ -355,29 +355,29 @@ for (iter in seq_len(nset)) {
     )
     rej <- res$index_select
     return(rej)
-  }, mc.cores = 50)
+  }, mc.cores = 25)
   saveRDS(bisquare_res, paste0(
     "stool_data/", outlier, "/", ratio, "/results/bisquare_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
 
-  #### quantile regression
-  qr_res <- mclapply(dta_list, function(dta) {
-    Y <- dta$otu.tab.sim
-    colnames(Y) <- paste0("sample", seq_len(n_sam))
-    rownames(Y) <- paste0("taxon", seq_len(n_taxa))
-    Z <- cbind(dta$covariate, dta$confounder)
-    colnames(Z) <- c("u", "z1", "z2")
-    rownames(Z) <- paste0("sample", seq_len(n_sam))
-    Z <- as.data.frame(Z)
-    Z$u <- as.factor(Z$u)
-    Z$z2 <- as.factor(Z$z2)
-    res <- qr_fun(Y, Z, paste("~", formula))
-    rej <- res$index_select
-    return(rej)
-  }, mc.cores = 50)
-  saveRDS(qr_res, paste0(
-    "stool_data/", outlier, "/", ratio, "/results/qr_conf_nsam", n_sam, "ntaxa", n_taxa,
-    "signal", signa_den, "streng", signa_streng, ".rds"
-  ))
+  # #### quantile regression
+  # qr_res <- mclapply(dta_list, function(dta) {
+  #   Y <- dta$otu.tab.sim
+  #   colnames(Y) <- paste0("sample", seq_len(n_sam))
+  #   rownames(Y) <- paste0("taxon", seq_len(n_taxa))
+  #   Z <- cbind(dta$covariate, dta$confounder)
+  #   colnames(Z) <- c("u", "z1", "z2")
+  #   rownames(Z) <- paste0("sample", seq_len(n_sam))
+  #   Z <- as.data.frame(Z)
+  #   Z$u <- as.factor(Z$u)
+  #   Z$z2 <- as.factor(Z$z2)
+  #   res <- qr_fun(Y, Z, paste("~", formula))
+  #   rej <- res$index_select
+  #   return(rej)
+  # }, mc.cores = 25)
+  # saveRDS(qr_res, paste0(
+  #   "stool_data/", outlier, "/", ratio, "/results/qr_conf_nsam", n_sam, "ntaxa", n_taxa,
+  #   "signal", signa_den, "streng", signa_streng, ".rds"
+  # ))
 }

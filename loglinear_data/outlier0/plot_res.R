@@ -91,7 +91,7 @@ for (iter_conf in conf_vec) {
     df_plot$method[which(df_plot$method == "linda_winsor")] <- "LinDA_winsor"
     df_plot$method[which(df_plot$method == "huber")] <- "Huber"
     df_plot$method[which(df_plot$method == "bisquare")] <- "Bi_square"
-    df_plot$method[which(df_plot$method == "qr")] <- "QR"
+    # df_plot$method[which(df_plot$method == "qr")] <- "QR"
     df_plot$method <- factor(df_plot$method, levels = c(
       "LinDA", "LinDA97", "LinDA90", "LinDA_winsor",
       "Huber", "Bi_square"

@@ -11,26 +11,28 @@ winsor.fun <- function(Y, quan) {
 }
 
 ####################### Cauchy method #######################
-CombinePValues <- function(pvalues, weights=NULL){
-  if(!is.matrix(pvalues)){pvalues <- as.matrix(pvalues)}
+CombinePValues <- function(pvalues, weights = NULL) {
+  if (!is.matrix(pvalues)) {
+    pvalues <- as.matrix(pvalues)
+  }
   ## to avoid extremely values
-  pvalues[which(pvalues==0)] <- 5.55e-17
-  pvalues[which((1-pvalues)<1e-3)] <- 0.99
+  pvalues[which(pvalues == 0)] <- 5.55e-17
+  pvalues[which((1 - pvalues) < 1e-3)] <- 0.99
 
   num_pval <- ncol(pvalues)
   num_gene <- nrow(pvalues)
-  if(is.null(weights)){
-    weights <- matrix(rep(1.0/num_pval, num_pval*num_gene), ncol=num_pval )
-  }# end fi
-  if( (nrow(weights) != num_gene) || (ncol(weights) != num_pval)){
+  if (is.null(weights)) {
+    weights <- matrix(rep(1.0 / num_pval, num_pval * num_gene), ncol = num_pval)
+  } # end fi
+  if ((nrow(weights) != num_gene) || (ncol(weights) != num_pval)) {
     stop("the dimensions of weights does not match that of combined pvalues")
-  }# end fi
+  } # end fi
 
-  Cstat <- tan((0.5 - pvalues)*pi)
+  Cstat <- tan((0.5 - pvalues) * pi)
 
-  wCstat <- weights*Cstat
+  wCstat <- weights * Cstat
   Cbar <- apply(wCstat, 1, sum)
-  #combined_pval <- 1.0/2.0 - atan(Cbar)/pi
+  # combined_pval <- 1.0/2.0 - atan(Cbar)/pi
   combined_pval <- 1.0 - pcauchy(Cbar)
   combined_pval[which(combined_pval <= 0)] <- 5.55e-17
   return(combined_pval)
@@ -76,12 +78,14 @@ linda_winsor <- function(Y, Z, formula, winsor.quan.vec = NULL) {
     p_value_mat <- p_value_mat[, -index_rm]
   }
   pcol <- ncol(p_value_mat)
-  weights <- matrix(rep(1.0/pcol, pcol*m), ncol=pcol)
+  weights <- matrix(rep(1.0 / pcol, pcol * m), ncol = pcol)
   combine_pvalue <- CombinePValues(p_value_mat, weights)
   p_adj <- p.adjust(combine_pvalue, "BH")
   index_select <- which(p_adj < 0.05)
-  return(list(p_value_mat = p_value_mat, combine_pvalue = combine_pvalue,
-              index_select = index_select))
+  return(list(
+    p_value_mat = p_value_mat, combine_pvalue = combine_pvalue,
+    index_select = index_select
+  ))
 }
 
 ####################### robust regression #######################
@@ -94,18 +98,18 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
     stop("The OTU table contains NAs! Please remove!\n")
   }
   allvars <- colnames(Z)
-  
+
   ## pre processing
   keep.sam <- which(colSums(Y) >= lib_cut & rowSums(is.na(Z)) == 0)
   Y <- Y[, keep.sam]
   Z <- as.data.frame(Z[keep.sam, ])
   colnames(Z) <- allvars
-  
+
   n <- ncol(Y)
   keep.tax <- which(rowSums(Y > 0) / n >= prev_cut)
   Y <- Y[keep.tax, ]
   m <- nrow(Y)
-  
+
   ## some samples may have zero total counts after screening taxa
   if (any(colSums(Y) == 0)) {
     ind <- which(colSums(Y) > 0)
@@ -115,12 +119,12 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
     keep.sam <- keep.sam[ind]
     n <- ncol(Y)
   }
-  
+
   ## scaling numerical variables
   ind <- sapply(seq_len(ncol(Z)), function(i) is.numeric(Z[, i]))
   Z[, ind] <- scale(Z[, ind])
   p <- ncol(Z) + 1
-  
+
   ## handling zeros
   if (any(Y == 0)) {
     N <- colSums(Y)
@@ -143,11 +147,11 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
       Y <- Y + pseudo_cnt
     }
   }
-  
+
   ## CLR transformation
   logY <- log2(Y)
   W <- t(logY) - colMeans(logY)
-  
+
   ## robust linear regression
   options(warn = -1)
   formula_use <- as.formula(paste0("w_tmp", formula))
@@ -173,10 +177,10 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
       #### mode correction
       # bias <- median(alpha_vec)
       bias <- modeest::mlv(sqrt(n) * alpha_vec,
-                           method = "meanshift", kernel = "gaussian"
+        method = "meanshift", kernel = "gaussian"
       ) / sqrt(n)
       alpha_correct <- alpha_vec - bias
-      
+
       #### test
       if (test_method == "t") {
         ## t-test
@@ -211,10 +215,10 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
       #### mode correction
       # bias <- median(alpha_vec)
       bias <- modeest::mlv(sqrt(n) * alpha_vec,
-                           method = "meanshift", kernel = "gaussian"
+        method = "meanshift", kernel = "gaussian"
       ) / sqrt(n)
       alpha_correct <- alpha_vec - bias
-      
+
       #### test
       if (test_method == "t") {
         ## t-test
@@ -227,15 +231,17 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
       }
       pvalue_mat[, iter_hyper] <- p_value
     }
-  } 
+  }
   options(warn = 0)
-  weights <- matrix(rep(1.0/n_hyper, n_hyper*m), ncol=n_hyper)
+  weights <- matrix(rep(1.0 / n_hyper, n_hyper * m), ncol = n_hyper)
   combine_pvalue <- CombinePValues(pvalue_mat, weights)
   p_adj <- p.adjust(combine_pvalue, "BH")
   index_select <- which(p_adj < 0.05)
   #### return results
-  return(list(p_value_mat = pvalue_mat, combine_pvalue = combine_pvalue,
-              index_select = index_select))
+  return(list(
+    p_value_mat = pvalue_mat, combine_pvalue = combine_pvalue,
+    index_select = index_select
+  ))
 }
 
 ####################### quantile regression #######################
@@ -251,18 +257,18 @@ qr_fun <- function(Y, Z, formula, tau_vec = NULL, adaptive = TRUE, imputation = 
     tau_vec <- seq(0.4, 0.8, by = 0.05)
   }
   n_tau <- length(tau_vec)
-  
+
   ## preprocessing
   keep.sam <- which(colSums(Y) >= lib_cut & rowSums(is.na(Z)) == 0)
   Y <- Y[, keep.sam]
   Z <- as.data.frame(Z[keep.sam, ])
   colnames(Z) <- allvars
-  
+
   n <- ncol(Y)
   keep.tax <- which(rowSums(Y > 0) / n >= prev_cut)
   Y <- Y[keep.tax, ]
   m <- nrow(Y)
-  
+
   ## some samples may have zero total counts after screening taxa
   if (any(colSums(Y) == 0)) {
     ind <- which(colSums(Y) > 0)
@@ -272,12 +278,12 @@ qr_fun <- function(Y, Z, formula, tau_vec = NULL, adaptive = TRUE, imputation = 
     keep.sam <- keep.sam[ind]
     n <- ncol(Y)
   }
-  
+
   ## scaling numerical variables
   ind <- sapply(seq_len(ncol(Z)), function(i) is.numeric(Z[, i]))
   Z[, ind] <- scale(Z[, ind])
   p <- ncol(Z) + 1
-  
+
   ## handling zeros
   if (any(Y == 0)) {
     N <- colSums(Y)
@@ -302,11 +308,11 @@ qr_fun <- function(Y, Z, formula, tau_vec = NULL, adaptive = TRUE, imputation = 
       Y <- Y + pseudo_cnt
     }
   }
-  
+
   ## CLR transformation
   logY <- log2(Y)
   W <- t(logY) - colMeans(logY)
-  
+
   ## quantile regression
   options(warn = -1)
   formula_use <- as.formula(paste0("w_tmp", formula))
@@ -325,10 +331,10 @@ qr_fun <- function(Y, Z, formula, tau_vec = NULL, adaptive = TRUE, imputation = 
     #### mode correction
     # bias <- median(alpha_vec)
     bias <- modeest::mlv(sqrt(n) * alpha_vec,
-                         method = "meanshift", kernel = "gaussian"
+      method = "meanshift", kernel = "gaussian"
     ) / sqrt(n)
     alpha_correct <- alpha_vec - bias
-    
+
     #### test
     if (test_method == "t") {
       ## t-test
@@ -342,12 +348,13 @@ qr_fun <- function(Y, Z, formula, tau_vec = NULL, adaptive = TRUE, imputation = 
     pvalue_mat[, iter_tau] <- p_value
   }
   options(warn = 0)
-  weights <- matrix(rep(1.0/n_tau, n_tau*m), ncol=n_tau)
+  weights <- matrix(rep(1.0 / n_tau, n_tau * m), ncol = n_tau)
   combine_pvalue <- CombinePValues(pvalue_mat, weights)
   p_adj <- p.adjust(combine_pvalue, "BH")
   index_select <- which(p_adj < 0.05)
   #### return results
-  return(list(p_value_mat = pvalue_mat, combine_pvalue = combine_pvalue,
-              index_select = index_select))
+  return(list(
+    p_value_mat = pvalue_mat, combine_pvalue = combine_pvalue,
+    index_select = index_select
+  ))
 }
-
