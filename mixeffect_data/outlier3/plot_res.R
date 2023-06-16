@@ -3,7 +3,7 @@ set.seed(1)
 library(ggplot2)
 library(gridExtra)
 method_vec <- c(
-  "linda", "linda97", "linda90", "huber"
+  "linda", "linda97", "linda90", "linda_winsor", "huber"
 )
 n_method <- length(method_vec)
 outlier <- "outlier3"
@@ -86,9 +86,10 @@ for (iter_mix in mix_vec) {
     df_plot$method[which(df_plot$method == "linda")] <- "LinDA"
     df_plot$method[which(df_plot$method == "linda97")] <- "LinDA97"
     df_plot$method[which(df_plot$method == "linda90")] <- "LinDA90"
+    df_plot$method[which(df_plot$method == "linda_winsor")] <- "LinDA_winsor"
     df_plot$method[which(df_plot$method == "huber")] <- "Huber"
     df_plot$method <- factor(df_plot$method, levels = c(
-      "LinDA", "LinDA97", "LinDA90", "Huber"
+      "LinDA", "LinDA97", "LinDA90", "LinDA_winsor", "Huber"
     ))
     ## plots
     p1 <- ggplot(data = df_plot, aes(x = sig_streng, y = power, color = method)) +

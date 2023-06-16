@@ -110,6 +110,21 @@ for (iter_para in seq_len(n_setting)) {
     "mixeffect_data/", outlier, "/results/linda90_n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
+  
+  #### LinDA winsor method
+  linda_winsor_res <- mclapply(dta_list, function(dta) {
+    Y <- dta$Y
+    Z <- dta$Z
+    Z$id <- as.factor(Z$id)
+    res <- linda_winsor(Y, Z, paste("~", formula))
+    rej <- res$index_select
+    return(rej)
+  }, mc.cores = 50)
+  ## save results
+  saveRDS(linda_winsor_res, paste0(
+    "mixeffect_data/", outlier, "/results/linda_winsor_n", n,
+    "gamma", gamma, "mu", mu_use, model, ".rds"
+  ))
 
   #### Huber method
   huber_res <- mclapply(dta_list, function(dta) {
