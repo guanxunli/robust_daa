@@ -77,7 +77,7 @@ for (iter_set in seq_len(nset)) {
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
   res_table_conf <- data.frame(
-    "method" = c("LinDA", "LinDA97", "LinDA90", "LinDA_winsor", "Huber", "Bi-square", "QR"),
+    "method" = c("LinDA", "LinDA97", "LinDA90", "LinDA_winsor", "Huber", "Bi-square"),
     "confounder" = rep("with", n_method),
     "Power" = numeric(n_method), "Power_sd" = numeric(n_method),
     "FDR" = numeric(n_method), "FDR_sd" = numeric(n_method)
