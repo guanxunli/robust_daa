@@ -5,11 +5,11 @@ ratio <- "ratio3"
 library(ggplot2)
 library(gridExtra)
 method_vec <- c(
-  "linda", "linda97", "linda90", "linda_winsor", "huber", "bisquare"
+  "linda", "linda97", "linda90", "huber", "bisquare", "qr"
 )
 n_method <- length(method_vec)
-n_sam <- c(50, 100, 200)
-n_taxa <- c(50, 100, 500)
+n_sam <- c(50, 100)
+n_taxa <- 500
 set_df <- data.frame(n_sam = rep(n_sam, length(n_taxa)), n_taxa = rep(n_taxa, each = length(n_sam)))
 signa_den <- c(0.05, 0.2)
 set_df <- cbind(apply(set_df, 2, rep, length(signa_den)), rep(signa_den, each = nrow(set_df)))
@@ -30,7 +30,7 @@ for (iter_set in seq_len(nset)) {
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
   res_table_noconf <- data.frame(
-    "method" = c("LinDA", "LinDA97", "LinDA90", "LinDA_winsor", "Huber", "Bi-square"),
+    "method" = c("LinDA", "LinDA97", "LinDA90", "Huber", "Bi-square", "QR"),
     "confounder" = rep("without", n_method),
     "Power" = numeric(n_method), "Power_sd" = numeric(n_method),
     "FDR" = numeric(n_method), "FDR_sd" = numeric(n_method)
@@ -77,7 +77,7 @@ for (iter_set in seq_len(nset)) {
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
   res_table_conf <- data.frame(
-    "method" = c("LinDA", "LinDA97", "LinDA90", "LinDA_winsor", "Huber", "Bi-square"),
+    "method" = c("LinDA", "LinDA97", "LinDA90", "Huber", "Bi-square", "QR"),
     "confounder" = rep("with", n_method),
     "Power" = numeric(n_method), "Power_sd" = numeric(n_method),
     "FDR" = numeric(n_method), "FDR_sd" = numeric(n_method)

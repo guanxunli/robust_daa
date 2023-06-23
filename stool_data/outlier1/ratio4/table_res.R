@@ -1,6 +1,6 @@
 set.seed(1)
 outlier <- "outlier1"
-ratio <- "ratio2"
+ratio <- "ratio4"
 ################## define parameters ##################
 library(ggplot2)
 library(gridExtra)
