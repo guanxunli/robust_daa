@@ -4,7 +4,7 @@ library(ggplot2)
 library(gridExtra)
 method_vec <- c(
   "linda", "linda97", "linda90",
-  "huber", "bisquare"
+  "huber", "bisquare", "qr"
 )
 n_method <- length(method_vec)
 outlier <- "outlier3"
@@ -13,18 +13,18 @@ para0 <- readRDS(paste0("loglinear_data/", outlier, "/datasets/log.normal.para.r
 beta0 <- para0$beta0
 sigma2 <- para0$sigma2
 # parameter use
-sample_size_vec <- c(50, 50, 200, 200)
+sample_size_vec <- c(100, 100)
 m <- 500
 n_sim <- 100
 # define settings
-sig_density_vec <- c(0.05, 0.2, 0.05, 0.2)
+sig_density_vec <- c(0.05, 0.2)
 sig_strength_vec <- seq(1.05, 2, length.out = 6)
 n_signa <- length(sig_strength_vec)
 conf_vec <- c("nocon_n", "con_n")
 ratio <- "ratio2"
 ################## without confounder ##################
 for (iter_conf in conf_vec) {
-  for (iter_plot in seq_len(4)) {
+  for (iter_plot in seq_len(2)) {
     n <- sample_size_vec[iter_plot]
     gamma <- sig_density_vec[iter_plot]
     out_res_list <- list()

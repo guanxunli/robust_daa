@@ -254,7 +254,7 @@ qr_fun <- function(Y, Z, formula, tau_vec = NULL, adaptive = TRUE, imputation = 
   }
   allvars <- colnames(Z)
   if (is.null(tau_vec)) {
-    tau_vec <- seq(0.4, 0.8, by = 0.05)
+    tau_vec <- seq(0.25, 0.75, by = 0.05)
   }
   n_tau <- length(tau_vec)
 

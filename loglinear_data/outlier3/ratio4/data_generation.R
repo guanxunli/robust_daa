@@ -18,8 +18,8 @@ sample.size <- rep(sample.size.vec, each = s2 * s3)
 sig.density <- rep(rep(sig.density.vec, each = s3), s1)
 sig.strength <- rep(sig.strength.vec, s1 * s2)
 setting <- cbind(sample.size, sig.density, sig.strength)
-ratio <- "ratio2"
-ratio_outlier <- 1
+ratio <- "ratio4"
+ratio_outlier <- 4
 
 #### without confounder
 for (iter_para in seq_len(nrow(setting))) {

@@ -1,7 +1,7 @@
 set.seed(1)
 library(parallel)
 outlier <- "outlier3"
-ratio <- "ratio3"
+ratio <- "ratio4"
 source(paste0("loglinear_data/", outlier, "/utility.R"))
 ## load parameters
 para0 <- readRDS(paste0("loglinear_data/", outlier, "/datasets/log.normal.para.rds"))

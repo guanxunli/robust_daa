@@ -21,7 +21,7 @@ sig_density_vec <- c(0.05, 0.2)
 sig_strength_vec <- seq(1.05, 2, length.out = 6)
 n_signa <- length(sig_strength_vec)
 conf_vec <- c("nocon_n", "con_n")
-ratio <- "ratio3"
+ratio <- "ratio4"
 ################## without confounder ##################
 for (iter_conf in conf_vec) {
   for (iter_plot in seq_len(2)) {

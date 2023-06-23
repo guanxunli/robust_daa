@@ -5,7 +5,7 @@ para0 <- readRDS("loglinear_data/outlier3/datasets/log.normal.para.rds")
 beta0 <- para0$beta0
 sigma2 <- para0$sigma2
 # parameter use
-sample.size.vec <- c(50, 200)
+sample.size.vec <- 100
 m <- 500
 n_sim <- 100
 # define settings
@@ -19,8 +19,7 @@ sig.density <- rep(rep(sig.density.vec, each = s3), s1)
 sig.strength <- rep(sig.strength.vec, s1 * s2)
 setting <- cbind(sample.size, sig.density, sig.strength)
 ratio <- "ratio1"
-ratio_outlier <- 0.01
-
+ratio_outlier <- 0.5
 
 #### without confounder
 for (iter_para in seq_len(nrow(setting))) {
@@ -66,8 +65,8 @@ for (iter_para in seq_len(nrow(setting))) {
     N <- rnbinom(n, size = 5.3, mu = 7645)
     Y <- sapply(1:n, function(s) rmultinom(1, N[s], pi[, s]))
     # sample outliers
-    index_out <- sample(n, size = ratio_outlier * n)
-    Y[, index_out] <- Y[, index_out]^4
+    index_out <- sample(which(Y != 0), size = ratio_outlier * m)
+    Y[index_out] <- Y[index_out] * 20
 
     ## save results
     Z <- as.data.frame(Z)
@@ -141,8 +140,8 @@ for (iter_para in seq_len(nrow(setting))) {
     N <- rnbinom(n, size = 5.3, mu = 7645)
     Y <- sapply(1:n, function(s) rmultinom(1, N[s], pi[, s]))
     # sample outliers
-    index_out <- sample(n, size = ratio_outlier * n)
-    Y[, index_out] <- Y[, index_out]^4
+    index_out <- sample(which(Y != 0), size = ratio_outlier * m)
+    Y[index_out] <- Y[index_out] * 20
 
     ## save results
     Z <- as.data.frame(Z)

@@ -8,7 +8,7 @@ para0 <- readRDS(paste0("loglinear_data/", outlier, "/datasets/log.normal.para.r
 beta0 <- para0$beta0
 sigma2 <- para0$sigma2
 # parameter use
-sample.size.vec <- c(50, 200)
+sample.size.vec <- 100
 m <- 500
 n_sim <- 100
 # define settings
