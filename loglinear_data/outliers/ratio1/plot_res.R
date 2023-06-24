@@ -7,7 +7,7 @@ method_vec <- c(
   "huber", "bisquare", "qr"
 )
 n_method <- length(method_vec)
-outlier <- "outlier3"
+outlier <- "outliers"
 ## load parameters
 para0 <- readRDS(paste0("loglinear_data/", outlier, "/datasets/log.normal.para.rds"))
 beta0 <- para0$beta0
@@ -21,7 +21,7 @@ sig_density_vec <- c(0.05, 0.2)
 sig_strength_vec <- seq(1.05, 2, length.out = 6)
 n_signa <- length(sig_strength_vec)
 conf_vec <- c("nocon_n", "con_n")
-ratio <- "ratio4"
+ratio <- "ratio1"
 ################## without confounder ##################
 for (iter_conf in conf_vec) {
   for (iter_plot in seq_len(2)) {
@@ -88,7 +88,6 @@ for (iter_conf in conf_vec) {
     df_plot$method[which(df_plot$method == "linda")] <- "LinDA"
     df_plot$method[which(df_plot$method == "linda97")] <- "LinDA97"
     df_plot$method[which(df_plot$method == "linda90")] <- "LinDA90"
-    # df_plot$method[which(df_plot$method == "linda_winsor")] <- "LinDA_winsor"
     df_plot$method[which(df_plot$method == "huber")] <- "Huber"
     df_plot$method[which(df_plot$method == "bisquare")] <- "Bi_square"
     df_plot$method[which(df_plot$method == "qr")] <- "QR"

@@ -1,8 +1,9 @@
 set.seed(1)
 library(parallel)
-outlier <- "outlier3"
-ratio <- "ratio3"
-source(paste0("loglinear_data/", outlier, "/utility.R"))
+library(robustDAA)
+outlier <- "outliers"
+ratio <- "ratio2"
+# source(paste0("loglinear_data/", outlier, "/utility.R"))
 ## load parameters
 para0 <- readRDS(paste0("loglinear_data/", outlier, "/datasets/log.normal.para.rds"))
 beta0 <- para0$beta0
@@ -36,7 +37,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/", ratio, "/datasets/nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### LinDA method
   linda_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -50,7 +51,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/", ratio, "/results/linda_nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### LinDA97 method
   linda97_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -77,7 +78,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/", ratio, "/results/linda97_nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### LinDA90 method
   linda90_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -104,29 +105,14 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/", ratio, "/results/linda90_nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
-  # #### LinDA winsor method
-  # linda_winsor_res <- mclapply(dta_list, function(dta) {
-  #   Y <- dta$Y
-  #   Z <- dta$Z
-  #   res <- linda_winsor(Y, Z, paste("~", formula))
-  #   rej <- res$index_select
-  #   return(rej)
-  # }, mc.cores = 50)
-  # ## save results
-  # saveRDS(linda_winsor_res, paste0(
-  #   "loglinear_data/", outlier, "/", ratio, "/results/linda_winsor_nocon_n", n,
-  #   "gamma", gamma, "mu", mu_use, ".rds"
-  # ))
-
+  
   #### Huber method
   huber_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
     Z <- dta$Z
     res <- rlm_fun(
-      Y = Y, Z = Z, formula = paste("~", formula),
-      res_method = "psi.huber",
-      test_method = "t", adj_method = "BH"
+      otu_tab = Y, meta = Z, formula = paste("~", formula),
+      reg_method = "psi.huber"
     )
     rej <- res$index_select
     return(rej)
@@ -136,15 +122,14 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/", ratio, "/results/huber_nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### bisquare method
   bisquare_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
     Z <- dta$Z
     res <- rlm_fun(
-      Y = Y, Z = Z, formula = paste("~", formula),
-      res_method = "psi.bisquare",
-      test_method = "t", adj_method = "BH"
+      otu_tab = Y, meta = Z, formula = paste("~", formula),
+      reg_method = "psi.bisquare"
     )
     rej <- res$index_select
     return(rej)
@@ -154,12 +139,12 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/", ratio, "/results/bisquare_nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### quantile regression
   qr_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
     Z <- dta$Z
-    res <- qr_fun(Y, Z, paste("~", formula))
+    res <- qr_fun(otu_tab = Y, meta = Z, paste("~", formula))
     rej <- res$index_select
     return(rej)
   }, mc.cores = 50)
@@ -183,7 +168,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/", ratio, "/datasets/con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### LinDA method
   linda_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -197,7 +182,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/", ratio, "/results/linda_con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### LinDA97 method
   linda97_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -224,7 +209,7 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/", ratio, "/results/linda97_con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### LinDA90 method
   linda90_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -251,29 +236,14 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/", ratio, "/results/linda90_con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
-  # #### LinDA winsor method
-  # linda_winsor_res <- mclapply(dta_list, function(dta) {
-  #   Y <- dta$Y
-  #   Z <- dta$Z
-  #   res <- linda_winsor(Y, Z, paste("~", formula))
-  #   rej <- res$index_select
-  #   return(rej)
-  # }, mc.cores = 50)
-  # ## save results
-  # saveRDS(linda_winsor_res, paste0(
-  #   "loglinear_data/", outlier, "/", ratio, "/results/linda_winsor_con_n", n,
-  #   "gamma", gamma, "mu", mu_use, ".rds"
-  # ))
-
+  
   #### Huber method
   huber_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
     Z <- dta$Z
     res <- rlm_fun(
-      Y = Y, Z = Z, formula = paste("~", formula),
-      res_method = "psi.huber",
-      test_method = "t", adj_method = "BH"
+      otu_tab = Y, meta = Z, formula = paste("~", formula),
+      reg_method = "psi.huber"
     )
     rej <- res$index_select
     return(rej)
@@ -283,15 +253,14 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/", ratio, "/results/huber_con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### bisquare method
   bisquare_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
     Z <- dta$Z
     res <- rlm_fun(
-      Y = Y, Z = Z, formula = paste("~", formula),
-      res_method = "psi.bisquare",
-      test_method = "t", adj_method = "BH"
+      otu_tab = Y, meta = Z, formula = paste("~", formula),
+      reg_method = "psi.bisquare"
     )
     rej <- res$index_select
     return(rej)
@@ -301,12 +270,12 @@ for (iter_para in seq_len(n_setting)) {
     "loglinear_data/", outlier, "/", ratio, "/results/bisquare_con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
-
+  
   #### quantile regression
   qr_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
     Z <- dta$Z
-    res <- qr_fun(Y, Z, paste("~", formula))
+    res <- qr_fun(otu_tab = Y, meta = Z, paste("~", formula))
     rej <- res$index_select
     return(rej)
   }, mc.cores = 50)

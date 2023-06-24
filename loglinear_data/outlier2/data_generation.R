@@ -1,4 +1,4 @@
-set.seed(2023)
+set.seed(1)
 library(parallel)
 ## load parameters
 para0 <- readRDS("loglinear_data/outlier2/datasets/log.normal.para.rds")

@@ -1,7 +1,7 @@
-set.seed(2023)
+set.seed(1)
 library(parallel)
 ## load parameters
-para0 <- readRDS("loglinear_data/outlier3/datasets/log.normal.para.rds")
+para0 <- readRDS("loglinear_data/outliers/datasets/log.normal.para.rds")
 beta0 <- para0$beta0
 sigma2 <- para0$sigma2
 # parameter use
@@ -81,7 +81,7 @@ for (iter_para in seq_len(nrow(setting))) {
   }, mc.cores = 50)
   # save datasets
   saveRDS(dta_list, paste0(
-    "loglinear_data/outlier3/", ratio, "/datasets/nocon_n", n,
+    "loglinear_data/outliers/", ratio, "/datasets/nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
 }
@@ -157,7 +157,7 @@ for (iter_para in seq_len(nrow(setting))) {
   }, mc.cores = 50)
   # save datasets
   saveRDS(dta_list, paste0(
-    "loglinear_data/outlier3/", ratio, "/datasets/con_n", n,
+    "loglinear_data/outliers/", ratio, "/datasets/con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
 }

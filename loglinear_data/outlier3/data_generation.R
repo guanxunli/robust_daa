@@ -1,11 +1,11 @@
-set.seed(2023)
+set.seed(1)
 library(parallel)
 ## load parameters
-para0 <- readRDS("loglinear_data/outlier3/datasets/log.normal.para.rds")
+para0 <- readRDS("loglinear_data/outlier5/datasets/log.normal.para.rds")
 beta0 <- para0$beta0
 sigma2 <- para0$sigma2
 # parameter use
-sample.size.vec <- 100
+sample.size.vec <- c(50, 200)
 m <- 500
 n_sim <- 100
 # define settings
@@ -18,8 +18,6 @@ sample.size <- rep(sample.size.vec, each = s2 * s3)
 sig.density <- rep(rep(sig.density.vec, each = s3), s1)
 sig.strength <- rep(sig.strength.vec, s1 * s2)
 setting <- cbind(sample.size, sig.density, sig.strength)
-ratio <- "ratio3"
-ratio_outlier <- 2
 
 #### without confounder
 for (iter_para in seq_len(nrow(setting))) {
@@ -55,7 +53,10 @@ for (iter_para in seq_len(nrow(setting))) {
 
     ## generate X
     tmp <- beta %*% t(Z) + beta0
-    logX <- matrix(rnorm(m * n, tmp, rep(sqrt(sigma2), n)), nrow = m)
+    error_mat <- matrix(rweibull(m * n, shape = 0.5, scale = 0.3), nrow = m)
+    error_mat <- error_mat - mean(error_mat)
+
+    logX <- tmp + error_mat
     pi <- apply(logX, 2, function(logx) {
       max_logx <- max(logx)
       x <- exp(logx - max_logx)
@@ -64,9 +65,6 @@ for (iter_para in seq_len(nrow(setting))) {
     # generate Y
     N <- rnbinom(n, size = 5.3, mu = 7645)
     Y <- sapply(1:n, function(s) rmultinom(1, N[s], pi[, s]))
-    # sample outliers
-    index_out <- sample(which(Y != 0), size = ratio_outlier * m)
-    Y[index_out] <- Y[index_out] * 20
 
     ## save results
     Z <- as.data.frame(Z)
@@ -81,7 +79,7 @@ for (iter_para in seq_len(nrow(setting))) {
   }, mc.cores = 50)
   # save datasets
   saveRDS(dta_list, paste0(
-    "loglinear_data/outlier3/", ratio, "/datasets/nocon_n", n,
+    "loglinear_data/outlier5/datasets/nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
 }
@@ -130,7 +128,11 @@ for (iter_para in seq_len(nrow(setting))) {
 
     ## generate X
     tmp <- beta %*% t(Z) + beta0
-    logX <- matrix(rnorm(m * n, tmp, rep(sqrt(sigma2), n)), nrow = m)
+    # error mat
+    error_mat <- matrix(rweibull(m * n, shape = 0.5, scale = 0.3), nrow = m)
+    error_mat <- error_mat - mean(error_mat)
+    # log X
+    logX <- tmp + error_mat
     pi <- apply(logX, 2, function(logx) {
       max_logx <- max(logx)
       x <- exp(logx - max_logx)
@@ -139,9 +141,6 @@ for (iter_para in seq_len(nrow(setting))) {
     # generate Y
     N <- rnbinom(n, size = 5.3, mu = 7645)
     Y <- sapply(1:n, function(s) rmultinom(1, N[s], pi[, s]))
-    # sample outliers
-    index_out <- sample(which(Y != 0), size = ratio_outlier * m)
-    Y[index_out] <- Y[index_out] * 20
 
     ## save results
     Z <- as.data.frame(Z)
@@ -157,7 +156,7 @@ for (iter_para in seq_len(nrow(setting))) {
   }, mc.cores = 50)
   # save datasets
   saveRDS(dta_list, paste0(
-    "loglinear_data/outlier3/", ratio, "/datasets/con_n", n,
+    "loglinear_data/outlier5/datasets/con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
 }

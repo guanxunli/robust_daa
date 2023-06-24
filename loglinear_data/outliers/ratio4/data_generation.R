@@ -1,7 +1,7 @@
-set.seed(2023)
+set.seed(1)
 library(parallel)
 ## load parameters
-para0 <- readRDS("loglinear_data/outlier3/datasets/log.normal.para.rds")
+para0 <- readRDS("loglinear_data/outliers/datasets/log.normal.para.rds")
 beta0 <- para0$beta0
 sigma2 <- para0$sigma2
 # parameter use
@@ -18,8 +18,8 @@ sample.size <- rep(sample.size.vec, each = s2 * s3)
 sig.density <- rep(rep(sig.density.vec, each = s3), s1)
 sig.strength <- rep(sig.strength.vec, s1 * s2)
 setting <- cbind(sample.size, sig.density, sig.strength)
-ratio <- "ratio2"
-ratio_outlier <- 1
+ratio <- "ratio4"
+ratio_outlier <- 4
 
 #### without confounder
 for (iter_para in seq_len(nrow(setting))) {
@@ -81,7 +81,7 @@ for (iter_para in seq_len(nrow(setting))) {
   }, mc.cores = 50)
   # save datasets
   saveRDS(dta_list, paste0(
-    "loglinear_data/outlier3/", ratio, "/datasets/nocon_n", n,
+    "loglinear_data/outliers/", ratio, "/datasets/nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
 }
@@ -157,7 +157,7 @@ for (iter_para in seq_len(nrow(setting))) {
   }, mc.cores = 50)
   # save datasets
   saveRDS(dta_list, paste0(
-    "loglinear_data/outlier3/", ratio, "/datasets/con_n", n,
+    "loglinear_data/outliers/", ratio, "/datasets/con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
 }

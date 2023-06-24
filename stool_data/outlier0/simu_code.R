@@ -1,7 +1,8 @@
 set.seed(1)
 library(parallel)
+library(robustDAA)
 outlier <- "outlier0"
-source(paste0("stool_data/", outlier, "/utility.R"))
+# source(paste0("stool_data/", outlier, "/utility.R"))
 ## define parameters
 n_sam <- c(50, 100)
 n_taxa <- c(500)
@@ -139,9 +140,8 @@ for (iter in seq_len(nset)) {
     Z <- as.data.frame(Z)
     Z$u <- as.factor(Z$u)
     res <- rlm_fun(
-      Y = Y, Z = Z, formula = paste("~", formula),
-      res_method = "psi.huber",
-      test_method = "t", adj_method = "BH"
+      otu_tab = Y, meta = Z, formula = paste("~", formula),
+      reg_method = "psi.huber"
     )
     rej <- res$index_select
     return(rej)
@@ -162,9 +162,8 @@ for (iter in seq_len(nset)) {
     Z <- as.data.frame(Z)
     Z$u <- as.factor(Z$u)
     res <- rlm_fun(
-      Y = Y, Z = Z, formula = paste("~", formula),
-      res_method = "psi.bisquare",
-      test_method = "t", adj_method = "BH"
+      otu_tab = Y, meta = Z, formula = paste("~", formula),
+      reg_method = "psi.bisquare"
     )
     rej <- res$index_select
     return(rej)
@@ -184,7 +183,7 @@ for (iter in seq_len(nset)) {
     rownames(Z) <- paste0("sample", seq_len(n_sam))
     Z <- as.data.frame(Z)
     Z$u <- as.factor(Z$u)
-    res <- qr_fun(Y, Z, paste("~", formula))
+    res <- qr_fun(otu_tab = Y, meta = Z, paste("~", formula))
     rej <- res$index_select
     return(rej)
   }, mc.cores = 50)
@@ -324,9 +323,8 @@ for (iter in seq_len(nset)) {
     Z$u <- as.factor(Z$u)
     Z$z2 <- as.factor(Z$z2)
     res <- rlm_fun(
-      Y = Y, Z = Z, formula = paste("~", formula),
-      res_method = "psi.huber",
-      test_method = "t", adj_method = "BH"
+      otu_tab = Y, meta = Z, formula = paste("~", formula),
+      reg_method = "psi.huber"
     )
     rej <- res$index_select
     return(rej)
@@ -348,9 +346,8 @@ for (iter in seq_len(nset)) {
     Z$u <- as.factor(Z$u)
     Z$z2 <- as.factor(Z$z2)
     res <- rlm_fun(
-      Y = Y, Z = Z, formula = paste("~", formula),
-      res_method = "psi.bisquare",
-      test_method = "t", adj_method = "BH"
+      otu_tab = Y, meta = Z, formula = paste("~", formula),
+      reg_method = "psi.bisquare"
     )
     rej <- res$index_select
     return(rej)
@@ -371,7 +368,7 @@ for (iter in seq_len(nset)) {
     Z <- as.data.frame(Z)
     Z$u <- as.factor(Z$u)
     Z$z2 <- as.factor(Z$z2)
-    res <- qr_fun(Y, Z, paste("~", formula))
+    res <- qr_fun(otu_tab = Y, meta = Z, paste("~", formula))
     rej <- res$index_select
     return(rej)
   }, mc.cores = 50)

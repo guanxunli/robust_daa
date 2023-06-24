@@ -1,11 +1,11 @@
-set.seed(2023)
+set.seed(1)
 library(parallel)
 ## load parameters
-para0 <- readRDS("loglinear_data/outlier5/datasets/log.normal.para.rds")
+para0 <- readRDS("loglinear_data/outliers/datasets/log.normal.para.rds")
 beta0 <- para0$beta0
 sigma2 <- para0$sigma2
 # parameter use
-sample.size.vec <- c(50, 200)
+sample.size.vec <- 100
 m <- 500
 n_sim <- 100
 # define settings
@@ -18,6 +18,8 @@ sample.size <- rep(sample.size.vec, each = s2 * s3)
 sig.density <- rep(rep(sig.density.vec, each = s3), s1)
 sig.strength <- rep(sig.strength.vec, s1 * s2)
 setting <- cbind(sample.size, sig.density, sig.strength)
+ratio <- "ratio2"
+ratio_outlier <- 1
 
 #### without confounder
 for (iter_para in seq_len(nrow(setting))) {
@@ -40,23 +42,20 @@ for (iter_para in seq_len(nrow(setting))) {
     tmp <- (pi0.ave > 0.005)
     mu <- 2 * mu_use * (n <= 50) + mu_use * (n > 50)
     mu.1 <- log(mu * tmp + mu * (0.005 / pi0.ave)^(1 / 3) * (1 - tmp))
-
+    
     ## index true
     index_true <- rbinom(m, 1, gamma)
     index_alter <- which(index_true == 1)
     alpha <- mu.1 * index_true
-
+    
     ## generative confounders
     u <- rbinom(n, 1, 0.5)
     Z <- cbind(u)
     beta <- alpha
-
+    
     ## generate X
     tmp <- beta %*% t(Z) + beta0
-    error_mat <- matrix(rweibull(m * n, shape = 0.5, scale = 0.3), nrow = m)
-    error_mat <- error_mat - mean(error_mat)
-
-    logX <- tmp + error_mat
+    logX <- matrix(rnorm(m * n, tmp, rep(sqrt(sigma2), n)), nrow = m)
     pi <- apply(logX, 2, function(logx) {
       max_logx <- max(logx)
       x <- exp(logx - max_logx)
@@ -65,7 +64,10 @@ for (iter_para in seq_len(nrow(setting))) {
     # generate Y
     N <- rnbinom(n, size = 5.3, mu = 7645)
     Y <- sapply(1:n, function(s) rmultinom(1, N[s], pi[, s]))
-
+    # sample outliers
+    index_out <- sample(which(Y != 0), size = ratio_outlier * m)
+    Y[index_out] <- Y[index_out] * 20
+    
     ## save results
     Z <- as.data.frame(Z)
     Z$u <- factor(Z$u)
@@ -79,7 +81,7 @@ for (iter_para in seq_len(nrow(setting))) {
   }, mc.cores = 50)
   # save datasets
   saveRDS(dta_list, paste0(
-    "loglinear_data/outlier5/datasets/nocon_n", n,
+    "loglinear_data/outliers/", ratio, "/datasets/nocon_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
 }
@@ -105,12 +107,12 @@ for (iter_para in seq_len(nrow(setting))) {
     tmp <- (pi0.ave > 0.005)
     mu <- 2 * mu_use * (n <= 50) + mu_use * (n > 50)
     mu.1 <- log(mu * tmp + mu * (0.005 / pi0.ave)^(1 / 3) * (1 - tmp))
-
+    
     ## index true
     index_true <- rbinom(m, 1, gamma)
     index_alter <- which(index_true == 1)
     alpha <- mu.1 * index_true
-
+    
     ## generative confounders
     # c mat
     z1 <- rbinom(n, 1, 0.5)
@@ -125,14 +127,10 @@ for (iter_para in seq_len(nrow(setting))) {
     }
     Z <- cbind(u, z1, z2)
     beta <- cbind(alpha, beta1, beta2)
-
+    
     ## generate X
     tmp <- beta %*% t(Z) + beta0
-    # error mat
-    error_mat <- matrix(rweibull(m * n, shape = 0.5, scale = 0.3), nrow = m)
-    error_mat <- error_mat - mean(error_mat)
-    # log X
-    logX <- tmp + error_mat
+    logX <- matrix(rnorm(m * n, tmp, rep(sqrt(sigma2), n)), nrow = m)
     pi <- apply(logX, 2, function(logx) {
       max_logx <- max(logx)
       x <- exp(logx - max_logx)
@@ -141,7 +139,10 @@ for (iter_para in seq_len(nrow(setting))) {
     # generate Y
     N <- rnbinom(n, size = 5.3, mu = 7645)
     Y <- sapply(1:n, function(s) rmultinom(1, N[s], pi[, s]))
-
+    # sample outliers
+    index_out <- sample(which(Y != 0), size = ratio_outlier * m)
+    Y[index_out] <- Y[index_out] * 20
+    
     ## save results
     Z <- as.data.frame(Z)
     Z$u <- as.factor(Z$u)
@@ -156,7 +157,7 @@ for (iter_para in seq_len(nrow(setting))) {
   }, mc.cores = 50)
   # save datasets
   saveRDS(dta_list, paste0(
-    "loglinear_data/outlier5/datasets/con_n", n,
+    "loglinear_data/outliers/", ratio, "/datasets/con_n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
 }

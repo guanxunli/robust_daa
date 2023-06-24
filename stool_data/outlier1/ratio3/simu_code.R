@@ -1,8 +1,9 @@
 set.seed(1)
 library(parallel)
+library(robustDAA)
 outlier <- "outlier1"
 ratio <- "ratio3"
-source(paste0("stool_data/", outlier, "/utility.R"))
+# source(paste0("stool_data/", outlier, "/utility.R"))
 ## define parameters
 n_sam <- c(50, 100)
 n_taxa <- 500
@@ -28,7 +29,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/", ratio, "/datasets/noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-
+  
   #### LinDA method
   linda_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -47,7 +48,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/", ratio, "/results/linda_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-
+  
   #### LinDA97 method
   linda97_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -78,7 +79,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/", ratio, "/results/linda97_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-
+  
   #### LinDA90 method
   linda90_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -109,7 +110,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/", ratio, "/results/linda90_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-
+  
   #### huber regression
   huber_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -121,9 +122,8 @@ for (iter in seq_len(nset)) {
     Z <- as.data.frame(Z)
     Z$u <- as.factor(Z$u)
     res <- rlm_fun(
-      Y = Y, Z = Z, formula = paste("~", formula),
-      res_method = "psi.huber",
-      test_method = "t", adj_method = "BH"
+      otu_tab = Y, meta = Z, formula = paste("~", formula),
+      reg_method = "psi.huber"
     )
     rej <- res$index_select
     return(rej)
@@ -132,7 +132,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/", ratio, "/results/huber_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-
+  
   #### bisquare regression
   bisquare_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -144,9 +144,8 @@ for (iter in seq_len(nset)) {
     Z <- as.data.frame(Z)
     Z$u <- as.factor(Z$u)
     res <- rlm_fun(
-      Y = Y, Z = Z, formula = paste("~", formula),
-      res_method = "psi.bisquare",
-      test_method = "t", adj_method = "BH"
+      otu_tab = Y, meta = Z, formula = paste("~", formula),
+      reg_method = "psi.bisquare"
     )
     rej <- res$index_select
     return(rej)
@@ -155,7 +154,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/", ratio, "/results/bisquare_noconf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-
+  
   #### quantile regression
   qr_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -166,7 +165,7 @@ for (iter in seq_len(nset)) {
     rownames(Z) <- paste0("sample", seq_len(n_sam))
     Z <- as.data.frame(Z)
     Z$u <- as.factor(Z$u)
-    res <- qr_fun(Y, Z, paste("~", formula))
+    res <- qr_fun(otu_tab = Y, meta = Z, paste("~", formula))
     rej <- res$index_select
     return(rej)
   }, mc.cores = 50)
@@ -189,7 +188,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/", ratio, "/datasets/conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-
+  
   #### LinDA method
   linda_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -209,7 +208,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/", ratio, "/results/linda_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-
+  
   #### LinDA97 method
   linda97_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -241,7 +240,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/", ratio, "/results/linda97_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-
+  
   #### LinDA90 method
   linda90_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -273,7 +272,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/", ratio, "/results/linda90_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-
+  
   #### huber regression
   huber_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -286,9 +285,8 @@ for (iter in seq_len(nset)) {
     Z$u <- as.factor(Z$u)
     Z$z2 <- as.factor(Z$z2)
     res <- rlm_fun(
-      Y = Y, Z = Z, formula = paste("~", formula),
-      res_method = "psi.huber",
-      test_method = "t", adj_method = "BH"
+      otu_tab = Y, meta = Z, formula = paste("~", formula),
+      reg_method = "psi.huber"
     )
     rej <- res$index_select
     return(rej)
@@ -297,7 +295,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/", ratio, "/results/huber_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-
+  
   #### bisquare regression
   bisquare_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -310,9 +308,8 @@ for (iter in seq_len(nset)) {
     Z$u <- as.factor(Z$u)
     Z$z2 <- as.factor(Z$z2)
     res <- rlm_fun(
-      Y = Y, Z = Z, formula = paste("~", formula),
-      res_method = "psi.bisquare",
-      test_method = "t", adj_method = "BH"
+      otu_tab = Y, meta = Z, formula = paste("~", formula),
+      reg_method = "psi.bisquare"
     )
     rej <- res$index_select
     return(rej)
@@ -321,7 +318,7 @@ for (iter in seq_len(nset)) {
     "stool_data/", outlier, "/", ratio, "/results/bisquare_conf_nsam", n_sam, "ntaxa", n_taxa,
     "signal", signa_den, "streng", signa_streng, ".rds"
   ))
-
+  
   #### quantile regression
   qr_res <- mclapply(dta_list, function(dta) {
     Y <- dta$otu.tab.sim
@@ -333,7 +330,7 @@ for (iter in seq_len(nset)) {
     Z <- as.data.frame(Z)
     Z$u <- as.factor(Z$u)
     Z$z2 <- as.factor(Z$z2)
-    res <- qr_fun(Y, Z, paste("~", formula))
+    res <- qr_fun(otu_tab = Y, meta = Z, paste("~", formula))
     rej <- res$index_select
     return(rej)
   }, mc.cores = 50)
