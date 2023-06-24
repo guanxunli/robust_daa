@@ -90,10 +90,10 @@ for (iter_conf in conf_vec) {
     df_plot$method[which(df_plot$method == "linda90")] <- "LinDA90"
     df_plot$method[which(df_plot$method == "huber")] <- "Huber"
     df_plot$method[which(df_plot$method == "bisquare")] <- "Bi_square"
-    # df_plot$method[which(df_plot$method == "qr")] <- "QR"
+    df_plot$method[which(df_plot$method == "qr")] <- "QR"
     df_plot$method <- factor(df_plot$method, levels = c(
       "LinDA", "LinDA97", "LinDA90",
-      "Huber", "Bi_square"
+      "Huber", "Bi_square", "QR"
     ))
     p1 <- ggplot(data = df_plot, aes(x = sig_streng, y = power, color = method)) +
       geom_line(aes(linetype = method), linewidth = 1.5) +

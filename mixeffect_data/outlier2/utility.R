@@ -18,7 +18,7 @@ CombinePValues <- function(pvalues, weights = NULL) {
   ## to avoid extremely values
   pvalues[which(pvalues == 0)] <- 5.55e-17
   pvalues[which((1 - pvalues) < 1e-3)] <- 0.99
-  
+
   num_pval <- ncol(pvalues)
   num_gene <- nrow(pvalues)
   if (is.null(weights)) {
@@ -27,9 +27,9 @@ CombinePValues <- function(pvalues, weights = NULL) {
   if ((nrow(weights) != num_gene) || (ncol(weights) != num_pval)) {
     stop("the dimensions of weights does not match that of combined pvalues")
   } # end fi
-  
+
   Cstat <- tan((0.5 - pvalues) * pi)
-  
+
   wCstat <- weights * Cstat
   Cbar <- apply(wCstat, 1, sum)
   # combined_pval <- 1.0/2.0 - atan(Cbar)/pi
@@ -100,18 +100,18 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
     stop("The OTU table contains NAs! Please remove!\n")
   }
   allvars <- colnames(Z)
-  
+
   ## preprocessing
   keep.sam <- which(colSums(Y) >= lib_cut & rowSums(is.na(Z)) == 0)
   Y <- Y[, keep.sam]
   Z <- as.data.frame(Z[keep.sam, ])
   colnames(Z) <- allvars
-  
+
   n <- ncol(Y)
   keep.tax <- which(rowSums(Y > 0) / n >= prev_cut)
   Y <- Y[keep.tax, ]
   m <- nrow(Y)
-  
+
   ## some samples may have zero total counts after screening taxa
   if (any(colSums(Y) == 0)) {
     ind <- which(colSums(Y) > 0)
@@ -121,19 +121,19 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
     keep.sam <- keep.sam[ind]
     n <- ncol(Y)
   }
-  
+
   ## scaling numerical variables
   ind <- sapply(seq_len(ncol(Z)), function(i) is.numeric(Z[, i]))
   Z[, ind] <- scale(Z[, ind])
   p <- ncol(Z) + 1
-  
+
   ## check random effect
   if (grepl("\\(", formula)) {
     random_effect <- TRUE
   } else {
     random_effect <- FALSE
   }
-  
+
   ## handling zeros
   if (any(Y == 0)) {
     N <- colSums(Y)
@@ -162,11 +162,11 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
       Y <- Y + pseudo_cnt
     }
   }
-  
+
   ## CLR transformation
   logY <- log2(Y)
   W <- t(logY) - colMeans(logY)
-  
+
   ## robust linear regression
   options(warn = -1)
   formula_use <- as.formula(paste0("w_tmp", formula))
@@ -194,8 +194,10 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
     ## different hyperparameter
     for (iter_hyper in c(2:n_hyper)) {
       hyper_para <- hyper_para_vec[iter_hyper]
-      rfit_hyper <- update(rfit, rho.sigma.e = psi2propII(smoothPsi, k = hyper_para),
-                           rho.sigma.b = psi2propII(smoothPsi, k = hyper_para))
+      rfit_hyper <- update(rfit,
+        rho.sigma.e = psi2propII(smoothPsi, k = hyper_para),
+        rho.sigma.b = psi2propII(smoothPsi, k = hyper_para)
+      )
       ## parameter
       summary_rfit <- summary(rfit_hyper)
       alpha_mat[iter_m, iter_hyper] <- coef(summary_rfit)[2, 1]
@@ -208,14 +210,14 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
     }
   }
   options(warn = 0)
-  
+
   for (iter_hyper in seq_len(n_hyper)) {
     alpha_vec <- alpha_mat[, iter_hyper]
     sd_alpha <- sd_mat[, iter_hyper]
     df_vec <- df_mat[, iter_hyper]
     #### mode correction
     bias <- modeest::mlv(sqrt(n) * alpha_vec,
-                         method = "meanshift", kernel = "gaussian"
+      method = "meanshift", kernel = "gaussian"
     ) / sqrt(n)
     alpha_correct <- alpha_vec - bias
     #### test

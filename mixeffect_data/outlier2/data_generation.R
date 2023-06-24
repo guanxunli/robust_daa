@@ -70,12 +70,12 @@ for (iter_para in seq_len(n_setting)) {
     # tau2 <- runif(m, 0, 1) * sigma2
     # r <- matrix(rnorm(m * n.id, 0, sqrt(tau2)), nrow = m)[, id]
     ## log-normal random effect
-    r <- matrix(rlnorm(m * n.id, meanlog = 0, sdlog = 0.5), nrow = m)[, id]
+    r <- matrix(rlnorm(m * n.id, meanlog = 0, sdlog = 0.25), nrow = m)[, id]
     r <- r - mean(r)
     Z <- cbind(u, id)
     beta <- alpha
     tmp <- beta %*% t(Z[, 1]) + beta0
-    error_mat <- matrix(rlnorm(m * n, meanlog = 0, sdlog = 1), nrow = m)
+    error_mat <- matrix(rlnorm(m * n, meanlog = 0, sdlog = 0.5), nrow = m)
     error_mat <- error_mat - mean(error_mat)
     logX <- tmp + error_mat + r
     pi <- apply(logX, 2, function(logx) {

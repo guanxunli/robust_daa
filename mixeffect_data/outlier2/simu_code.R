@@ -39,7 +39,7 @@ for (iter_para in seq_len(n_setting)) {
     "mixeffect_data/", outlier, "/datasets/n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
-  
+
   #### LinDA method
   linda_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -54,7 +54,7 @@ for (iter_para in seq_len(n_setting)) {
     "mixeffect_data/", outlier, "/results/linda_n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
-  
+
   #### LinDA 97
   linda97_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -82,7 +82,7 @@ for (iter_para in seq_len(n_setting)) {
     "mixeffect_data/", outlier, "/results/linda97_n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
-  
+
   #### LinDA 90
   linda90_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -110,7 +110,7 @@ for (iter_para in seq_len(n_setting)) {
     "mixeffect_data/", outlier, "/results/linda90_n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
-  
+
   #### LinDA winsor method
   linda_winsor_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
@@ -125,7 +125,7 @@ for (iter_para in seq_len(n_setting)) {
     "mixeffect_data/", outlier, "/results/linda_winsor_n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
-  
+
   #### Huber method
   huber_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y

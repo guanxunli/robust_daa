@@ -7,8 +7,8 @@ method_vec <- c(
   "linda", "linda97", "linda90", "huber", "bisquare", "qr"
 )
 n_method <- length(method_vec)
-n_sam <- c(50, 100, 200)
-n_taxa <- c(50, 100, 500)
+n_sam <- c(50, 100)
+n_taxa <- 500
 set_df <- data.frame(n_sam = rep(n_sam, length(n_taxa)), n_taxa = rep(n_taxa, each = length(n_sam)))
 signa_den <- c(0.05, 0.2)
 set_df <- cbind(apply(set_df, 2, rep, length(signa_den)), rep(signa_den, each = nrow(set_df)))

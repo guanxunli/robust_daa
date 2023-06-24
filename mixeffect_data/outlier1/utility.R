@@ -18,7 +18,7 @@ CombinePValues <- function(pvalues, weights = NULL) {
   ## to avoid extremely values
   pvalues[which(pvalues == 0)] <- 5.55e-17
   pvalues[which((1 - pvalues) < 1e-3)] <- 0.99
-  
+
   num_pval <- ncol(pvalues)
   num_gene <- nrow(pvalues)
   if (is.null(weights)) {
@@ -27,9 +27,9 @@ CombinePValues <- function(pvalues, weights = NULL) {
   if ((nrow(weights) != num_gene) || (ncol(weights) != num_pval)) {
     stop("the dimensions of weights does not match that of combined pvalues")
   } # end fi
-  
+
   Cstat <- tan((0.5 - pvalues) * pi)
-  
+
   wCstat <- weights * Cstat
   Cbar <- apply(wCstat, 1, sum)
   # combined_pval <- 1.0/2.0 - atan(Cbar)/pi
@@ -194,8 +194,10 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
     ## different hyperparameter
     for (iter_hyper in c(2:n_hyper)) {
       hyper_para <- hyper_para_vec[iter_hyper]
-      rfit_hyper <- update(rfit, rho.sigma.e = psi2propII(smoothPsi, k = hyper_para),
-                           rho.sigma.b = psi2propII(smoothPsi, k = hyper_para))
+      rfit_hyper <- update(rfit,
+        rho.sigma.e = psi2propII(smoothPsi, k = hyper_para),
+        rho.sigma.b = psi2propII(smoothPsi, k = hyper_para)
+      )
       ## parameter
       summary_rfit <- summary(rfit_hyper)
       alpha_mat[iter_m, iter_hyper] <- coef(summary_rfit)[2, 1]
@@ -208,14 +210,14 @@ rlm_fun <- function(Y, Z, formula, adaptive = TRUE, imputation = FALSE,
     }
   }
   options(warn = 0)
-  
+
   for (iter_hyper in seq_len(n_hyper)) {
     alpha_vec <- alpha_mat[, iter_hyper]
     sd_alpha <- sd_mat[, iter_hyper]
     df_vec <- df_mat[, iter_hyper]
     #### mode correction
     bias <- modeest::mlv(sqrt(n) * alpha_vec,
-                         method = "meanshift", kernel = "gaussian"
+      method = "meanshift", kernel = "gaussian"
     ) / sqrt(n)
     alpha_correct <- alpha_vec - bias
     #### test

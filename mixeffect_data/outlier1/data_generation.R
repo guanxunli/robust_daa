@@ -18,7 +18,7 @@ sample.size <- rep(sample.size.vec, each = s2 * s3)
 sig.density <- rep(rep(sig.density.vec, each = s3), s1)
 sig.strength <- rep(sig.strength.vec, s1 * s2)
 setting <- cbind(sample.size, sig.density, sig.strength)
-mix_vec <- c("mix1", "mix2")
+mix_vec <- "mix2"
 setting <- cbind(apply(setting, 2, rep, length(mix_vec)), rep(mix_vec, each = nrow(setting)))
 colnames(setting) <- c("sample.size", "sig.density", "sig.strength", "model")
 n_setting <- nrow(setting)

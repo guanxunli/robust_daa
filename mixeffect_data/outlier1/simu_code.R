@@ -110,7 +110,7 @@ for (iter_para in seq_len(n_setting)) {
     "mixeffect_data/", outlier, "/results/linda90_n", n,
     "gamma", gamma, "mu", mu_use, model, ".rds"
   ))
-  
+
   #### LinDA winsor method
   linda_winsor_res <- mclapply(dta_list, function(dta) {
     Y <- dta$Y
