@@ -47,7 +47,7 @@ for (iter_para in seq_len(n_setting)) {
     index_true <- rbinom(m, 1, gamma)
     index_alter <- which(index_true == 1)
     alpha <- mu.1 * index_true
-    
+
     if (n == 50) {
       n.id <- 25
       u <- c(rep(0, 24), rep(1, 26))

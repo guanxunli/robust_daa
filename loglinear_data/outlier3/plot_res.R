@@ -7,7 +7,7 @@ method_vec <- c(
   "huber", "bisquare", "qr"
 )
 n_method <- length(method_vec)
-outlier <- "outlier5"
+outlier <- "outlier3"
 ## load parameters
 para0 <- readRDS(paste0("loglinear_data/", outlier, "/datasets/log.normal.para.rds"))
 beta0 <- para0$beta0
