@@ -18,9 +18,7 @@ sample.size <- rep(sample.size.vec, each = s2 * s3)
 sig.density <- rep(rep(sig.density.vec, each = s3), s1)
 sig.strength <- rep(sig.strength.vec, s1 * s2)
 setting <- cbind(sample.size, sig.density, sig.strength)
-mix_vec <- c("mix1", "mix2")
-setting <- cbind(apply(setting, 2, rep, length(mix_vec)), rep(mix_vec, each = nrow(setting)))
-colnames(setting) <- c("sample.size", "sig.density", "sig.strength", "model")
+colnames(setting) <- c("sample.size", "sig.density", "sig.strength")
 n_setting <- nrow(setting)
 
 #### generate datasets
@@ -30,7 +28,6 @@ for (iter_para in seq_len(n_setting)) {
   n <- as.numeric(para[1])
   gamma <- as.numeric(para[2])
   mu_use <- as.numeric(para[3])
-  model <- para[4]
   dta_list <- mclapply(seq_len(n_sim), function(iter_simu) {
     dta <- list()
     ## generate basic expression
@@ -50,32 +47,24 @@ for (iter_para in seq_len(n_setting)) {
     index_true <- rbinom(m, 1, gamma)
     index_alter <- which(index_true == 1)
     alpha <- mu.1 * index_true
-
-    if (model == "mix1") {
-      n.id <- n / 2
-      u <- rep(0:1, n.id)
+    
+    if (n == 50) {
+      n.id <- 25
+      u <- c(rep(0, 24), rep(1, 26))
       id <- rep(1:n.id, each = 2)
-    } else if (model == "mix2") {
-      if (n == 50) {
-        n.id <- 25
-        u <- c(rep(0, 24), rep(1, 26))
-        id <- rep(1:n.id, each = 2)
-      } else if (n == 200) {
-        n.id <- 50
-        u <- c(rep(0, 100), rep(1, 100))
-        id <- rep(1:n.id, each = 4)
-      }
+    } else if (n == 200) {
+      n.id <- 50
+      u <- c(rep(0, 100), rep(1, 100))
+      id <- rep(1:n.id, each = 4)
     }
-    # ## normal random effect
-    # tau2 <- runif(m, 0, 1) * sigma2
-    # r <- matrix(rnorm(m * n.id, 0, sqrt(tau2)), nrow = m)[, id]
+
     ## log-normal random effect
-    r <- matrix(rlnorm(m * n.id, meanlog = 0, sdlog = 0.25), nrow = m)[, id]
+    r <- matrix(rlnorm(m * n.id, meanlog = 0, sdlog = 0.5), nrow = m)[, id]
     r <- r - mean(r)
     Z <- cbind(u, id)
     beta <- alpha
     tmp <- beta %*% t(Z[, 1]) + beta0
-    error_mat <- matrix(rlnorm(m * n, meanlog = 0, sdlog = 0.5), nrow = m)
+    error_mat <- matrix(rlnorm(m * n, meanlog = 0, sdlog = 0.8), nrow = m)
     error_mat <- error_mat - mean(error_mat)
     logX <- tmp + error_mat + r
     pi <- apply(logX, 2, function(logx) {
@@ -101,6 +90,6 @@ for (iter_para in seq_len(n_setting)) {
   # save datasets
   saveRDS(dta_list, paste0(
     "mixeffect_data/outlier2/datasets/n", n,
-    "gamma", gamma, "mu", mu_use, model, ".rds"
+    "gamma", gamma, "mu", mu_use, ".rds"
   ))
 }

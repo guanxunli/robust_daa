@@ -6,22 +6,22 @@ method_vec <- c(
   "linda", "linda97", "linda90", "huber"
 )
 n_method <- length(method_vec)
-outlier <- "outlier3"
+outlier <- "outliers"
+ratio <- "ratio2"
 ## load parameters
-para0 <- readRDS(paste0("mixeffect_data/", outlier, "/datasets/log.normal.para.rds"))
+para0 <- readRDS(paste0("mixeffect_data/", outlier, "/", ratio, "/datasets/log.normal.para.rds"))
 beta0 <- para0$beta0
 sigma2 <- para0$sigma2
 # parameter use
-sample_size_vec <- c(50, 50, 200, 200)
+sample_size_vec <- c(100, 100)
 m <- 500
 n_sim <- 100
 # define settings
-sig_density_vec <- c(0.05, 0.2, 0.05, 0.2)
+sig_density_vec <- c(0.05, 0.2)
 sig_strength_vec <- seq(1.05, 2, length.out = 6)
 n_signa <- length(sig_strength_vec)
-
 ################## without confounder ##################
-for (iter_plot in seq_len(4)) {
+for (iter_plot in seq_len(2)) {
   n <- sample_size_vec[iter_plot]
   gamma <- sig_density_vec[iter_plot]
   out_res_list <- list()
@@ -30,14 +30,14 @@ for (iter_plot in seq_len(4)) {
     mu_use <- sig_strength_vec[iter_sig]
     ## load results
     dta_list <- readRDS(paste0(
-      "mixeffect_data/", outlier, "/datasets/n", n,
+      "mixeffect_data/", outlier, "/", ratio, "/datasets/n", n,
       "gamma", gamma, "mu", mu_use, ".rds"
     ))
     res_list <- list()
     res_mat_list <- list()
     for (iter_method in method_vec) {
       res_list[[iter_method]] <- readRDS(paste0(
-        "mixeffect_data/", outlier, "/results/", iter_method, "_n", n,
+        "mixeffect_data/", outlier, "/", ratio, "/results/", iter_method, "_n", n,
         "gamma", gamma, "mu", mu_use, ".rds"
       ))
       res_mat_list[[iter_method]] <- matrix(NA, nrow = n_sim, ncol = 2)
@@ -125,7 +125,7 @@ for (iter_plot in seq_len(4)) {
   }
   shared_legend <- extract_legend(p2_legends)
   pdf(paste0(
-    "mixeffect_data/", outlier, "/figures/", "n", n,
+    "mixeffect_data/", outlier, "/", ratio, "/figures/", "n", n,
     "gamma", gamma, ".pdf"
   ), width = 10, height = 10)
   print(grid.arrange(arrangeGrob(p1, p2, nrow = 2),

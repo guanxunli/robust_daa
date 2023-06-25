@@ -1,12 +1,14 @@
 set.seed(1)
 library(parallel)
-ratio_outlier <- 0.05
+outlier <- "outliers"
+ratio <- "ratio3"
+ratio_outlier <- 2
 ## load parameters
-para0 <- readRDS(paste0("mixeffect_data/outlier3/datasets/log.normal.para.rds"))
+para0 <- readRDS(paste0("mixeffect_data/outliers/datasets/log.normal.para.rds"))
 beta0 <- para0$beta0
 sigma2 <- para0$sigma2
 # parameter use
-sample.size.vec <- c(50, 200)
+sample.size.vec <- 100
 m <- 500
 n_sim <- 100
 # define settings
@@ -43,7 +45,7 @@ for (iter_para in seq_len(n_setting)) {
     tmp <- (pi0.ave > 0.005)
     mu <- 2 * mu_use * (n <= 50) + mu_use * (n > 50)
     mu.1 <- log(mu * tmp + mu * (0.005 / pi0.ave)^(1 / 3) * (1 - tmp))
-
+    
     ## index true
     index_true <- rbinom(m, 1, gamma)
     index_alter <- which(index_true == 1)
@@ -58,16 +60,14 @@ for (iter_para in seq_len(n_setting)) {
       u <- c(rep(0, 100), rep(1, 100))
       id <- rep(1:n.id, each = 4)
     }
-
-    ## weibull distribution
-    r <- matrix(rweibull(m * n, shape = 0.8, scale = 0.3), nrow = m)[, id]
-    r <- r - mean(r)
+    
+    tau2 <- runif(m, 0, 1) * sigma2
+    # ## normal random effect
+    r <- matrix(rnorm(m * n.id, 0, sqrt(tau2)), nrow = m)[, id]
     Z <- cbind(u, id)
     beta <- alpha
     tmp <- beta %*% t(Z[, 1]) + beta0
-    error_mat <- matrix(rweibull(m * n, shape = 0.5, scale = 0.3), nrow = m)
-    error_mat <- error_mat - mean(error_mat)
-    logX <- tmp + error_mat + r
+    logX <- tmp + matrix(rnorm(m * n, sd = sqrt(sigma2)), nrow = m) + r
     pi <- apply(logX, 2, function(logx) {
       max_logx <- max(logx)
       x <- exp(logx - max_logx)
@@ -77,9 +77,9 @@ for (iter_para in seq_len(n_setting)) {
     N <- rnbinom(n, size = 5.3, mu = 7645)
     Y <- sapply(1:n, function(s) rmultinom(1, N[s], pi[, s]))
     # sample outliers
-    index_out <- sample(n, size = ratio_outlier * n)
-    Y[, index_out] <- Y[, index_out]^3
-
+    index_out <- sample(which(Y != 0), size = ratio_outlier * m)
+    Y[index_out] <- Y[index_out] * 20
+    
     ## save results
     Z <- as.data.frame(Z)
     Z$u <- factor(Z$u)
@@ -93,7 +93,7 @@ for (iter_para in seq_len(n_setting)) {
   }, mc.cores = 50)
   # save datasets
   saveRDS(dta_list, paste0(
-    "mixeffect_data/outlier3/datasets/n", n,
+    "mixeffect_data/outliers/", ratio, "/datasets/n", n,
     "gamma", gamma, "mu", mu_use, ".rds"
   ))
 }
