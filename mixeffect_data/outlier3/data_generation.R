@@ -6,13 +6,13 @@ para0 <- readRDS(paste0("mixeffect_data/outlier3/datasets/log.normal.para.rds"))
 beta0 <- para0$beta0
 sigma2 <- para0$sigma2
 # parameter use
-sample.size.vec <- c(50, 200)
+sample.size.vec <- 200
 m <- 500
 n_sim <- 100
 # define settings
 sig.density.vec <- c(0.05, 0.2)
 sig.strength.vec <- seq(1.05, 2, length.out = 6)
-s1 <- 2
+s1 <- 1
 s2 <- 2
 s3 <- 6
 sample.size <- rep(sample.size.vec, each = s2 * s3)

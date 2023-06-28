@@ -9,11 +9,11 @@ n_method <- length(method_vec)
 outlier <- "outliers"
 ratio <- "ratio2"
 ## load parameters
-para0 <- readRDS(paste0("mixeffect_data/", outlier, "/", ratio, "/datasets/log.normal.para.rds"))
+para0 <- readRDS(paste0("mixeffect_data/", outlier, "/datasets/log.normal.para.rds"))
 beta0 <- para0$beta0
 sigma2 <- para0$sigma2
 # parameter use
-sample_size_vec <- c(100, 100)
+sample_size_vec <- c(200, 200)
 m <- 500
 n_sim <- 100
 # define settings

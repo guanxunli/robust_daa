@@ -12,16 +12,16 @@ para0 <- readRDS(paste0("mixeffect_data/", outlier, "/datasets/log.normal.para.r
 beta0 <- para0$beta0
 sigma2 <- para0$sigma2
 # parameter use
-sample_size_vec <- c(50, 50, 200, 200)
+sample_size_vec <- c(200, 200)
 m <- 500
 n_sim <- 100
 # define settings
-sig_density_vec <- c(0.05, 0.2, 0.05, 0.2)
+sig_density_vec <- c(0.05, 0.2)
 sig_strength_vec <- seq(1.05, 2, length.out = 6)
 n_signa <- length(sig_strength_vec)
 
 ################## without confounder ##################
-for (iter_plot in seq_len(4)) {
+for (iter_plot in seq_len(2)) {
   n <- sample_size_vec[iter_plot]
   gamma <- sig_density_vec[iter_plot]
   out_res_list <- list()

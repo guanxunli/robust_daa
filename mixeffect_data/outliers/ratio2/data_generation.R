@@ -8,7 +8,7 @@ para0 <- readRDS(paste0("mixeffect_data/outliers/datasets/log.normal.para.rds"))
 beta0 <- para0$beta0
 sigma2 <- para0$sigma2
 # parameter use
-sample.size.vec <- 100
+sample.size.vec <- 200
 m <- 500
 n_sim <- 100
 # define settings
@@ -51,8 +51,8 @@ for (iter_para in seq_len(n_setting)) {
     index_alter <- which(index_true == 1)
     alpha <- mu.1 * index_true
 
-    n.id <- 25
-    u <- c(rep(0, 48), rep(1, 52))
+    n.id <- 50
+    u <- c(rep(0, 100), rep(1, 100))
     id <- rep(1:n.id, each = 4)
 
     tau2 <- runif(m, 0, 1) * sigma2
