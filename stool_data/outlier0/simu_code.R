@@ -9,7 +9,7 @@ n_taxa <- c(500)
 set_df <- data.frame(n_sam = rep(n_sam, length(n_taxa)), n_taxa = rep(n_taxa, each = length(n_sam)))
 signa_den <- c(0.05, 0.2)
 set_df <- cbind(apply(set_df, 2, rep, length(signa_den)), rep(signa_den, each = nrow(set_df)))
-signa_streng <- 1.25
+signa_streng <- 2
 set_df <- cbind(apply(set_df, 2, rep, length(signa_streng)), rep(signa_streng, each = nrow(set_df)))
 colnames(set_df) <- c("n_sam", "n_taxa", "signa_den", "signa_streng")
 set_df <- as.data.frame(set_df)

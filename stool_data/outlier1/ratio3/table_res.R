@@ -2,8 +2,6 @@ set.seed(1)
 outlier <- "outlier1"
 ratio <- "ratio3"
 ################## define parameters ##################
-library(ggplot2)
-library(gridExtra)
 method_vec <- c(
   "linda", "linda97", "linda90", "huber", "bisquare", "qr"
 )
@@ -16,7 +14,7 @@ set_df <- cbind(apply(set_df, 2, rep, length(signa_den)), rep(signa_den, each = 
 nset <- nrow(set_df)
 set_df <- as.data.frame(set_df)
 colnames(set_df) <- c("n_sam", "n_taxa", "signa_den")
-signa_streng <- 1.25
+signa_streng <- 2
 n_simu <- 1e2
 ################## without confounder ##################
 for (iter_set in seq_len(nset)) {
