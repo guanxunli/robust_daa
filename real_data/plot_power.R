@@ -14,7 +14,7 @@ preprocess_fun <- function(otu_tab, meta, prev_cut = 0.1, lib.cut = 1000) {
   return(list(Y = Y, Z = Z, keep_sam = keep_sam, keep_tax = keep_tax))
 }
 
-#### Run different methods
+####################### Run different methods #######################
 formulas <- c("Disease", "Disease+Antibiotic", "Disease")
 for (iter_dta in seq_len(3)) {
   ## load data set
@@ -95,57 +95,162 @@ for (iter_dta in seq_len(3)) {
   saveRDS(out_res, paste0("real_data/results/data", iter_dta, "res.rds"))
 }
 
-#### power plot
-thres_vec <- c(0.01, seq(0.05, 0.25, 0.05))
+####################### power plot #######################
+thres_vec <- seq(0.01, 0.25, by = 0.01)
 n_thres <- length(thres_vec)
-for (iter_dta in seq_len(3)) {
-  power_mat <- matrix(NA, nrow = 6, ncol = n_thres)
-  out_res <- readRDS(paste0("real_data/results/data", iter_dta, "res.rds"))
-  padj_linda <- out_res[["linda"]]
-  padj_linda97 <- out_res[["linda97"]]
-  padj_linda90 <- out_res[["linda90"]]
-  padj_huber <- out_res[["huber"]]
-  padj_bisquare <- out_res[["bisquare"]]
-  padj_qr <- out_res[["qr"]]
 
-  for (iter_thres in seq_len(n_thres)) {
-    thres_use <- thres_vec[iter_thres]
-    power_mat[, iter_thres] <- c(
-      sum(padj_linda <= thres_use),
-      sum(padj_linda97 <= thres_use),
-      sum(padj_linda90 <= thres_use),
-      sum(padj_huber <= thres_use),
-      sum(padj_bisquare <= thres_use),
-      sum(padj_qr <= thres_use)
-    )
-  }
-  df_plot <- data.frame(
-    y = as.numeric(power_mat),
-    method = rep(c("LinDA", "LinDA97", "LinDA90", "Huber", "Bi_square", "QR"), n_thres),
-    x = rep(thres_vec, each = 6)
-  )
-  df_plot$method <- factor(df_plot$method, levels = c(
-    "LinDA", "LinDA97", "LinDA90",
-    "Huber", "Bi_square", "QR"
-  ))
-  p1 <- ggplot(df_plot, aes(x = x, y = y, color = method)) +
-    geom_line(linewidth = 1.5, aes(linetype = method)) +
-    geom_point(size = 1.5) +
-    xlab("Target FDR level") +
-    ylab("Number of discoveries") +
-    theme_bw(base_size = 33) +
-    theme(legend.position = "bottom")
-  ggsave(paste0("real_data/figures/power/realdata", iter_dta, ".pdf"),
-    p1,
-    width = 10, height = 10
+## the first data set
+dta_name1 <- names(dta)[1]
+dta_name1 <- strsplit(dta_name1, "\\.")[[1]][1]
+power_mat <- matrix(NA, nrow = 6, ncol = n_thres)
+out_res <- readRDS(paste0("real_data/results/data", 1, "res.rds"))
+padj_linda <- out_res[["linda"]]
+padj_linda97 <- out_res[["linda97"]]
+padj_linda90 <- out_res[["linda90"]]
+padj_huber <- out_res[["huber"]]
+padj_bisquare <- out_res[["bisquare"]]
+padj_qr <- out_res[["qr"]]
+
+for (iter_thres in seq_len(n_thres)) {
+  thres_use <- thres_vec[iter_thres]
+  power_mat[, iter_thres] <- c(
+    sum(padj_linda <= thres_use),
+    sum(padj_linda97 <= thres_use),
+    sum(padj_linda90 <= thres_use),
+    sum(padj_huber <= thres_use),
+    sum(padj_bisquare <= thres_use),
+    sum(padj_qr <= thres_use)
   )
 }
+df_plot1 <- data.frame(
+  y = as.numeric(power_mat),
+  method = rep(c("LinDA", "LinDA97", "LinDA90", "Huber", "Bi_square", "QR"), n_thres),
+  x = rep(thres_vec, each = 6)
+)
+df_plot1$method <- factor(df_plot1$method, levels = c(
+  "LinDA", "LinDA97", "LinDA90",
+  "Huber", "Bi_square", "QR"
+))
+p1 <- ggplot(df_plot1, aes(x = x, y = y, color = method)) +
+  geom_line(linewidth = 1, aes(linetype = method)) +
+  geom_point(size = 1.5, aes(shape = method)) +
+  xlab("Target FDR level") +
+  ylab("Number of discoveries") +
+  ggtitle(dta_name1) +
+  theme_bw(base_size = 33) +
+  theme(legend.position = "none")
 
+## the second data set
+dta_name2 <- names(dta)[3]
+dta_name2 <- strsplit(dta_name2, "\\.")[[1]][1]
+power_mat <- matrix(NA, nrow = 6, ncol = n_thres)
+out_res <- readRDS(paste0("real_data/results/data", 2, "res.rds"))
+padj_linda <- out_res[["linda"]]
+padj_linda97 <- out_res[["linda97"]]
+padj_linda90 <- out_res[["linda90"]]
+padj_huber <- out_res[["huber"]]
+padj_bisquare <- out_res[["bisquare"]]
+padj_qr <- out_res[["qr"]]
 
-#### overlap plot
+for (iter_thres in seq_len(n_thres)) {
+  thres_use <- thres_vec[iter_thres]
+  power_mat[, iter_thres] <- c(
+    sum(padj_linda <= thres_use),
+    sum(padj_linda97 <= thres_use),
+    sum(padj_linda90 <= thres_use),
+    sum(padj_huber <= thres_use),
+    sum(padj_bisquare <= thres_use),
+    sum(padj_qr <= thres_use)
+  )
+}
+df_plot2 <- data.frame(
+  y = as.numeric(power_mat),
+  method = rep(c("LinDA", "LinDA97", "LinDA90", "Huber", "Bi_square", "QR"), n_thres),
+  x = rep(thres_vec, each = 6)
+)
+df_plot2$method <- factor(df_plot2$method, levels = c(
+  "LinDA", "LinDA97", "LinDA90",
+  "Huber", "Bi_square", "QR"
+))
+p2 <- ggplot(df_plot2, aes(x = x, y = y, color = method)) +
+  geom_line(linewidth = 1, aes(linetype = method)) +
+  geom_point(size = 1.5, aes(shape = method)) +
+  xlab("Target FDR level") +
+  ylab("Number of discoveries") +
+  ggtitle(dta_name2) +
+  theme_bw(base_size = 33) +
+  theme(legend.position = "none")
+
+## the third data set
+dta_name3 <- names(dta)[5]
+dta_name3 <- strsplit(dta_name3, "\\.")[[1]][1]
+power_mat <- matrix(NA, nrow = 6, ncol = n_thres)
+out_res <- readRDS(paste0("real_data/results/data", 3, "res.rds"))
+padj_linda <- out_res[["linda"]]
+padj_linda97 <- out_res[["linda97"]]
+padj_linda90 <- out_res[["linda90"]]
+padj_huber <- out_res[["huber"]]
+padj_bisquare <- out_res[["bisquare"]]
+padj_qr <- out_res[["qr"]]
+
+for (iter_thres in seq_len(n_thres)) {
+  thres_use <- thres_vec[iter_thres]
+  power_mat[, iter_thres] <- c(
+    sum(padj_linda <= thres_use),
+    sum(padj_linda97 <= thres_use),
+    sum(padj_linda90 <= thres_use),
+    sum(padj_huber <= thres_use),
+    sum(padj_bisquare <= thres_use),
+    sum(padj_qr <= thres_use)
+  )
+}
+df_plot3 <- data.frame(
+  y = as.numeric(power_mat),
+  method = rep(c("LinDA", "LinDA97", "LinDA90", "Huber", "Bi_square", "QR"), n_thres),
+  x = rep(thres_vec, each = 6)
+)
+df_plot3$method <- factor(df_plot3$method, levels = c(
+  "LinDA", "LinDA97", "LinDA90",
+  "Huber", "Bi_square", "QR"
+))
+p3 <- ggplot(df_plot3, aes(x = x, y = y, color = method)) +
+  geom_line(linewidth = 1, aes(linetype = method)) +
+  geom_point(size = 1.5, aes(shape = method)) +
+  xlab("Target FDR level") +
+  ylab("Number of discoveries") +
+  ggtitle(dta_name3) +
+  theme_bw(base_size = 33) +
+  theme(legend.position = "none")
+p3_legend <- ggplot(df_plot3, aes(x = x, y = y, color = method)) +
+  geom_line(linewidth = 1, aes(linetype = method)) +
+  geom_point(size = 1.5, aes(shape = method)) +
+  xlab("Target FDR level") +
+  ylab("Number of discoveries") +
+  ggtitle(dta_name3) +
+  theme_bw(base_size = 33) +
+  theme(legend.position = "bottom")
+extract_legend <- function(my_ggp) {
+  step1 <- ggplot_gtable(ggplot_build(my_ggp))
+  step2 <- which(sapply(step1$grobs, function(x) x$name) == "guide-box")
+  step3 <- step1$grobs[[step2]]
+  return(step3)
+}
+shared_legend <- extract_legend(p3_legend)
+## save plots
+pdf("real_data/figures/power/res.pdf", width = 20, height = 10)
+print(grid.arrange(arrangeGrob(p1, p2, p3, ncol = 3),
+                   shared_legend,
+                   nrow = 2, heights = c(10, 1)
+))
+dev.off()
+
+####################### overlap plot #######################
 library(UpSetR)
+library(grid)
 alpha <- 0.1
 for (iter_dta in seq_len(3)) {
+  dta_name <- names(dta)[2 * (iter_dta - 1) + 1]
+  dta_name <- strsplit(dta_name, "\\.")[[1]][1]
   out_res <- readRDS(paste0("real_data/results/data", iter_dta, "res.rds"))
   padj_linda <- out_res[["linda"]]
   padj_linda97 <- out_res[["linda97"]]
@@ -163,6 +268,10 @@ for (iter_dta in seq_len(3)) {
   pdf(paste0("real_data/figures/overlap/realdata", iter_dta, ".pdf"),
     width = 10, height = 10
   )
-  print(upset(fromList(res_list), nintersects = 12))
+  print(upset(fromList(res_list), nintersects = 12, mb.ratio = c(0.5, 0.5),
+              sets.x.label = '# of Discoveries',order.by = c("freq", "degree"),
+              decreasing = c(TRUE,FALSE), point.size = 3,
+              text.scale = c(3, 3, 2, 3, 3, 3)))
+  grid.text(dta_name, x = 0.65, y = 0.95, gp=gpar(fontsize = 22))
   dev.off()
 }

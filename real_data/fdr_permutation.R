@@ -104,7 +104,9 @@ method_vec <- c("linda", "linda97", "linda90", "huber", "bisquare", "qr")
 n_method <- length(method_vec)
 alpha <- 0.1
 for (iter_dta in seq_len(3)) {
-  cat("Data set", iter_dta, "\n")
+  dta_name <- names(dta)[2 * (iter_dta - 1) + 1]
+  dta_name <- strsplit(dta_name, "\\.")[[1]][1]
+  print(dta_name)
   out_res_list <- readRDS(paste0("real_data/results/data", iter_dta, "permu.rds"))
   n_permu <- length(out_res_list)
   out_list <- list()
